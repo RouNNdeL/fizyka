@@ -50,4 +50,5 @@
     <string name="toast_time_out">Przekroczono limit czasu połączenia</string>
     <string name="notify_button">Pobierz</string>
     <string name="about_developer">Twórca: Krzysiek Zdulski</string>
+    <string name="toast_invalid_path">Ścieżka jest nieprawidłowa</string>
 </resources>
