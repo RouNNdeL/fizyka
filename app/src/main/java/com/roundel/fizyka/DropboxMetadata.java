@@ -114,6 +114,13 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<String>>
 
         return resultToDisplay;
     }
+
+    public interface DropboxMetadataListener
+    {
+        void onTaskStart();
+        void onTaskEnd(List<String> result);
+    }
+
     //Might use that later
     /*protected boolean checkConnection()
     {
