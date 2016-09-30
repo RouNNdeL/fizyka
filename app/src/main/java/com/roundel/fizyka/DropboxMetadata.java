@@ -102,7 +102,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<String>>
             else
             {
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()));
-                Log.e(TAG, br.readLine());
+                Log.e(TAG, br.readLine()+HttpResponseCode);
 
             }
 

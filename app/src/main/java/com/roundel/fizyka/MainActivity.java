@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             case R.id.menu_refresh:
                 if(isOnline())
                 {
-                    DropboxMetadata dropboxMetadata= new DropboxMetadata(new DropboxMetadataListener()
+                    DropboxMetadata dropboxMetadata= new DropboxMetadata(new DropboxMetadata.DropboxMetadataListener()
                     {
                         @Override
                         public void onTaskEnd(List<String> result)

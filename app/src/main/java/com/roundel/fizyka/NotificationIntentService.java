@@ -109,7 +109,7 @@ public class NotificationIntentService extends IntentService
         {
             Log.d("DATE", e.getMessage());
         }
-        DropboxMetadata dropboxMetadata= new DropboxMetadata(new DropboxMetadataListener()
+        DropboxMetadata dropboxMetadata= new DropboxMetadata(new DropboxMetadata.DropboxMetadataListener()
         {
             @Override
             public void onTaskEnd(List<String> result)
