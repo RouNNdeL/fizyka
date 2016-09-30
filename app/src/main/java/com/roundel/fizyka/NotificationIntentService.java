@@ -109,38 +109,45 @@ public class NotificationIntentService extends IntentService
         {
             Log.d("DATE", e.getMessage());
         }
-        DropboxMetadata dropboxMetadata= new DropboxMetadata(new DropboxMetadata.DropboxMetadataListener()
+        DropboxMetadata dropboxMetadata= new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
         {
             @Override
-            public void onTaskEnd(List<String> result)
+            public void onTaskEnd(String result)
             {
-                Date date = newestDate(result);
-                if(date.after(mRecentUpdate))
+                try
                 {
-                    Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    Intent downloadIntent = new Intent();
-                    downloadIntent.setAction("ACTION_DOWNLOAD");
-                    downloadIntent.putExtra("DATE", mDropboxDateFormat.format(date));
-                    PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                    final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-                    builder.setContentTitle(getString(R.string.notify_title))
-                            .setAutoCancel(true)
-                            .setColor(getColor(R.color.colorPrimary))
-                            .setContentText(getString(R.string.notify_desc))
-                            .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
-                            .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.notify_button), pendingDownloadIntent)
-                            .setSound(uri);
+                    Date date = mDropboxDateFormat.parse(result);
+                    if(date.after(mRecentUpdate))
+                    {
+                        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Intent downloadIntent = new Intent();
+                        downloadIntent.setAction("ACTION_DOWNLOAD");
+                        downloadIntent.putExtra("DATE", mDropboxDateFormat.format(date));
+                        PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                        final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+                        builder.setContentTitle(getString(R.string.notify_title))
+                                .setAutoCancel(true)
+                                .setColor(getColor(R.color.colorPrimary))
+                                .setContentText(getString(R.string.notify_desc))
+                                .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
+                                .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.notify_button), pendingDownloadIntent)
+                                .setSound(uri);
 
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                    builder.setContentIntent(pendingIntent);
-                    builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
+                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                        builder.setContentIntent(pendingIntent);
+                        builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
 
-                    final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                    manager.notify(NOTIFICATION_ID, builder.build());
+                        final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                        manager.notify(NOTIFICATION_ID, builder.build());
+                    }
+                    else
+                    {
+                        Log.d("NOTIFY", "No update");
+                    }
                 }
-                else
+                catch (ParseException e)
                 {
-                    Log.d("NOTIFY", "No update");
+
                 }
             }
 

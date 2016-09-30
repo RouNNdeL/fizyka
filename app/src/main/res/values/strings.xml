@@ -17,6 +17,9 @@
     <string name="toast_no_updates">No updates found</string>
     <string name="toast_refresh_start">Update has started, this may take while</string>
     <string name="toast_time_out">Connection timed out</string>
+    <string name="toast_error_forbidden">You don\'t have permission to access that Dropbox folder</string>
+    <string name="toast_error_not_found">The Dropbox folder was not found, check your Dropbox folder link</string>
+    <string name="toast_error_unknown">An unknown error has occurred, check your Dropbox folder link</string>
 
     <!--About activity-->
     <string name="about_version">Version:</string>

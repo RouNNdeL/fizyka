@@ -79,20 +79,33 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             case R.id.menu_refresh:
                 if(isOnline())
                 {
-                    DropboxMetadata dropboxMetadata= new DropboxMetadata(new DropboxMetadata.DropboxMetadataListener()
+                    DropboxMetadata dropboxMetadata= new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
                     {
                         @Override
-                        public void onTaskEnd(List<String> result)
+                        public void onTaskEnd(String result)
                         {
                             completeRefresh(item);
-                            if(result.size() == 0)
+                            try
                             {
-                                Toast.makeText(MainActivity.this, getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
-                                return;
+                                Date date = mDropboxDateFormat.parse(result);
+                                mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
+                                startDownload(date.after(mRecentUpdate));
                             }
-                            Date date = newestDate(result);
-                            mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
-                            startDownload(date.after(mRecentUpdate));
+                            catch (ParseException e)
+                            {
+                                if(result.equals(DropboxMetadata.ERROR_FORBIDDEN))
+                                {
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
+                                }
+                                else if(result.equals(DropboxMetadata.ERROR_NOT_FOUND))
+                                {
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
+                                }
+                            }
                         }
 
                         @Override
@@ -273,29 +286,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         sp.putString("date", data);
         sp.apply();
         loadData(this);
-    }
-
-    private Date newestDate(List<String> array)
-    {
-        try{
-            Date newest = mDropboxDateFormat.parse(array.get(0));
-            Date current;
-            for (int i = 0; i < array.size(); i++)
-            {
-                current = mDropboxDateFormat.parse(array.get(i));
-                if(newest.before(current))
-                {
-                    newest = current;
-                }
-            }
-            return newest;
-        }
-        catch (ParseException e)
-        {
-            Log.e("DATES", e.getMessage());
-            return new Date();
-        }
-
     }
 
     public static class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
