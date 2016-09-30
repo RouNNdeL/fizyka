@@ -51,4 +51,7 @@
     <string name="notify_button">Pobierz</string>
     <string name="about_developer">Twórca: Krzysiek Zdulski</string>
     <string name="toast_invalid_path">Ścieżka jest nieprawidłowa</string>
+    <string name="toast_error_forbidden">Nie masz uprawnień by mieć dostęp do tego folderu</string>
+    <string name="toast_error_not_found">Folder nie został odnaleziony na Dropboxie</string>
+    <string name="toast_error_unknown"></string>
 </resources>
