@@ -54,19 +54,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         super.onCreate(savedInstanceState);
         MyPreferenceFragment preferenceFragment = new MyPreferenceFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content, preferenceFragment).commit();
-        preferenceFragment.findPreference("path").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
-        {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object o)
-            {
-                if(o instanceof String && ((String) o).matches("[\\s\\S]*\\S[\\s\\S]*"))
-                {
-                    return true;
-                }
-                Toast.makeText(MainActivity.this, getString(R.string.toast_invalid_path), Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
         loadData(this);
     }
     @Override
@@ -365,6 +352,20 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                     preference.setChecked(false);
                 }
             }
+            findPreference("download_path").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+            {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o)
+                {
+                    if(o instanceof String && ((String) o).matches("[\\s\\S]*\\S[\\s\\S]*"))
+                    {
+                        return true;
+                    }
+                    Toast.makeText(getContext(), getString(R.string.toast_invalid_path), Toast.LENGTH_SHORT).show();
+                    ((MyEditTextPreference) preference).show();
+                    return false;
+                }
+            });
         }
     }
 

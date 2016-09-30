@@ -26,7 +26,7 @@
     <PreferenceCategory
         android:title="@string/category_storage"
         >
-        <EditTextPreference
+        <com.roundel.fizyka.MyEditTextPreference
             android:key="download_path"
             android:title="@string/settings_path_title"
             android:summary="@string/settings_path_summary"
