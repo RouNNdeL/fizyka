@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Fizyka</string>
+
+    <!--Main activity-->
     <string name="main_activity_name">Fizyka</string>
+    <string name="toast_invalid_path">The path you entered is invaild</string>
+
     <string name="default_title">Reset</string>
     <string name="default_message">Do you want to reset the settings to default?</string>
 

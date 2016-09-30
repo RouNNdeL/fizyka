@@ -44,7 +44,7 @@ public class DownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
             builder.setSmallIcon(R.drawable.ic_file_download_white_24dp);
             builder.setContentTitle(context.getString(R.string.download_completed_title));
             builder.setContentText(context.getString(R.string.download_completed_desc));
-            builder.setColor(context.getColor(R.color.colorAccent));
+            builder.setColor(context.getColor(R.color.colorPrimary));
             builder.setAutoCancel(true);
             builder.setContentIntent(pendingIntent);
 

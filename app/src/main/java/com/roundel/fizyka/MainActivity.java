@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.content.*;
 import android.app.DialogFragment;
@@ -51,7 +52,21 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
+        MyPreferenceFragment preferenceFragment = new MyPreferenceFragment();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, preferenceFragment).commit();
+        preferenceFragment.findPreference("path").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
+        {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object o)
+            {
+                if(o instanceof String && ((String) o).matches("[\\s\\S]*\\S[\\s\\S]*"))
+                {
+                    return true;
+                }
+                Toast.makeText(MainActivity.this, getString(R.string.toast_invalid_path), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
         loadData(this);
     }
     @Override
