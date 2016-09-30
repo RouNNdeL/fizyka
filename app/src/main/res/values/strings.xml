@@ -1,0 +1,93 @@
+<resources>
+    <string name="app_name">Fizyka</string>
+    <string name="main_activity_name">Fizyka</string>
+    <string name="default_title">Reset</string>
+    <string name="default_message">Do you want to reset the settings to default?</string>
+
+    <string name="no_update_dialog_title">No new files</string>
+    <string name="no_update_dialog_desc">There are no new files available, do you still want to download?</string>
+    <string name="update_dialog_title">New files</string>
+    <string name="update_dialog_desc">There is a new version available, do you want to download?</string>
+
+    <string name="toast_no_network">There is no network connection</string>
+    <string name="toast_no_updates">No updates found</string>
+    <string name="toast_refresh_start">Update has started, this may take while</string>
+    <string name="toast_time_out">Connection timed out</string>
+
+    <!--About activity-->
+    <string name="about_version">Version:</string>
+    <string name="about_developer">Developed by Krzysiek Zdulski</string>
+    <string name="about_activity_name">About</string>
+
+    <!--Permission strings-->
+    <string name="permission_denied_WRITE_EXTERNAL_STOARGE">The app won\'t be able to download files</string>
+    <string name="permission_denied_notification">To use notification please allow external storage access</string>
+    <string name="permission_allowed_notification">Now you can enable notifications</string>
+
+    <!--Notification strings-->
+    <string name="notify_title">New files</string>
+    <string name="notify_desc">There are new files available to download</string>
+    <string name="notify_button">Download</string>
+    <string name="download_title">Fizyka</string>
+    <string name="download_disc">Your file is now being downloaded…</string>
+    <string name="download_completed_title">Download completed</string>
+    <string name="download_completed_desc">Your download has finished, click to open the file</string>
+
+    <!--Menu strings-->
+    <string name="menu_reset">Reset to default</string>
+    <string name="menu_about">About</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="menu_download">Download</string>
+
+    <!--Settings strings-->
+    <string name="settings_notification_title">Notifications</string>
+    <string name="settings_notification_summary">Enable or disable notifications</string>
+    <string name="settings_refresh_title">Refresh delay</string>
+    <string name="settings_refresh_summary">Time between refreshes</string>
+    <string name="settings_path_title">Path</string>
+    <string name="settings_path_summary">Path to save the downloaded file</string>
+    <string name="settings_url_title">Dropbox link</string>
+    <string name="settings_url_summary">URL to the shared Dropbox folder</string>
+    <string name="settings_extract_title">Extract</string>
+    <string name="settings_extract_summary">Extract files after download</string>
+
+    <string name="category_notification">Notification</string>
+    <string name="category_storage">Storage</string>
+    <string name="category_network">Network</string>
+
+    <string name="refresh_time1">30 minutes</string>
+    <string name="refresh_time2">1 hour</string>
+    <string name="refresh_time3">2 hours</string>
+    <string name="refresh_time4">4 hours</string>
+    <string name="refresh_time5">12 hours</string>
+    <string name="refresh_time6">1 day</string>
+    <string name="refresh_time7">2 days</string>
+    <string name="refresh_time8">Week</string>
+
+    <!--Settings arrays-->
+    <string-array name="refresh_time_name">
+        <!--<item>Debbug - 1min</item> -->            <!--TODO Remove in final release-->
+        <item>@string/refresh_time1</item>
+        <item>@string/refresh_time2</item>
+        <item>@string/refresh_time3</item>
+        <item>@string/refresh_time4</item>
+        <item>@string/refresh_time5</item>
+        <item>@string/refresh_time6</item>
+        <item>@string/refresh_time7</item>
+        <item>@string/refresh_time8</item>
+    </string-array>
+    <string-array name="refresh_time_value" translatable="false">
+        <!--<item>1</item>  -->                       <!--TODO Remove in final release-->
+        <item>30</item>
+        <item>60</item>
+        <item>120</item>
+        <item>240</item>
+        <item>720</item>
+        <item>1440</item>
+        <item>2880</item>
+        <item>10080</item>
+    </string-array>
+
+    <!--DO NOT EDIT-->
+    <string name="api_url" translatable="false">https://api.dropbox.com/1/metadata/link</string>
+</resources>
