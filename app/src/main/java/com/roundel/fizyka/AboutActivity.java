@@ -1,12 +1,13 @@
 package com.roundel.fizyka;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 public class AboutActivity extends AppCompatActivity
@@ -29,5 +30,12 @@ public class AboutActivity extends AppCompatActivity
         {
             Log.e("ABOUT", e.getMessage());
         }
+        findViewById(R.id.github_mark).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/rounndel/fizyka")));
+            }
+        });
     }
+
 }

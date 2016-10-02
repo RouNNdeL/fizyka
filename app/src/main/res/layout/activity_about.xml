@@ -1,31 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical" android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:gravity="center">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:layout_gravity="center_horizontal"
-        android:textStyle="bold"
-        android:textSize="25sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_gravity="center_horizontal"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:textColor="?android:textColorPrimary"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/about_developer"
-        android:layout_gravity="center_horizontal"
-        android:textSize="20sp"
-        android:layout_margin="5dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_developer"
+            android:layout_gravity="center_horizontal"
+            android:textSize="15sp"
+            android:layout_margin="5dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/about_version"
-        android:id="@+id/versionHolder"
-        android:layout_gravity="center_horizontal"
-        android:textSize="15sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_version"
+            android:id="@+id/versionHolder"
+            android:layout_gravity="center_horizontal"
+            android:textSize="15sp"/>
 
-</LinearLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|bottom"
+        android:layout_margin="35dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_github_mark"
+            android:adjustViewBounds="true"
+            android:maxWidth="64dp"
+            android:maxHeight="64dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ripple_drawable"
+            android:id="@+id/github_mark"/>
+    </RelativeLayout>
+
+</RelativeLayout>
