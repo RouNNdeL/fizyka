@@ -13,13 +13,14 @@
     <string name="update_dialog_title">New files</string>
     <string name="update_dialog_desc">There is a new version available, do you want to download?</string>
 
+    <!--Toast strings-->
     <string name="toast_no_network">There is no network connection</string>
     <string name="toast_no_updates">No updates found</string>
     <string name="toast_refresh_start">Update has started, this may take while</string>
-    <string name="toast_time_out">Connection timed out</string>
     <string name="toast_error_forbidden">You don\'t have permission to access that Dropbox folder</string>
     <string name="toast_error_not_found">The Dropbox folder was not found folder link</string>
     <string name="toast_error_unknown">An unknown error has occurred with the Dropbox link</string>
+    <string name="toast_error_connection_timed_out">Connection timed out</string>
 
     <!--About activity-->
     <string name="about_version">Version:</string>
@@ -46,7 +47,7 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_download">Download</string>
 
-    <!--Settings strings-->
+    <!--Preference strings-->
     <string name="settings_notification_title">Notifications</string>
     <string name="settings_notification_summary">Enable or disable notifications</string>
     <string name="settings_refresh_title">Refresh delay</string>
@@ -97,4 +98,5 @@
 
     <!--DO NOT EDIT-->
     <string name="api_url" translatable="false">https://api.dropbox.com/1/metadata/link</string>
+    <string name="file_name" translatable="false">fizyka.zip</string>
 </resources>

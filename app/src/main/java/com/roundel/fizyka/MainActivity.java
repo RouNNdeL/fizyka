@@ -2,16 +2,17 @@ package com.roundel.fizyka;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.DownloadManager;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.content.*;
-import android.app.DialogFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.v4.app.ActivityCompat;
@@ -23,14 +24,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatPreferenceActivity implements ActivityCompat.OnRequestPermissionsResultCallback
@@ -94,17 +94,13 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                             catch (ParseException e)
                             {
                                 if(result.equals(DropboxMetadata.ERROR_FORBIDDEN))
-                                {
                                     Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
-                                }
                                 else if(result.equals(DropboxMetadata.ERROR_NOT_FOUND))
-                                {
                                     Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
-                                }
+                                else if(result.equals(DropboxMetadata.ERROR_CONNECTION_TIMED_OUT))
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
                                 else
-                                {
                                     Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
-                                }
                             }
                         }
 

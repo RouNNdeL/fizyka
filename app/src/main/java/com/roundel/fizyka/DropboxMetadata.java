@@ -17,7 +17,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-09-24.
@@ -34,6 +33,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
     public final static String ERROR_FORBIDDEN = "ERROR_FORBIDDEN";
     public final static String ERROR_NOT_FOUND = "ERROR_NOT_FOUND";
     public final static String ERROR_UNKNOWN = "ERROR_UNKNOWN";
+    public final static String ERROR_CONNECTION_TIMED_OUT = "ERROR_CONNECTION_TIMED_OUT";
     private String errorState = NO_ERROR;
 
     public DropboxMetadata(DateFormat dateFormat, DropboxMetadataListener listener)
@@ -46,6 +46,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
     protected String doInBackground(String... params)
     {
         checkSubdirectories(params[0], params[1], params[2]);
+        if(datesList.isEmpty()) errorState = ERROR_CONNECTION_TIMED_OUT;
         if(!errorState.equals(NO_ERROR)) return errorState;
         return dateFormat.format(newestDate(datesList));
     }
