@@ -261,10 +261,12 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         if(mFolderPath.charAt(mFolderPath.length()-1) != '/')
         {
             mFolderPath+="/";
+            sp.edit().putString("download_path", mFolderPath).apply();
         }
         if(mFolderPath.charAt(0) != '/')
         {
             mFolderPath = "/"+mFolderPath;
+            sp.edit().putString("download_path", mFolderPath).apply();
         }
         try
         {
@@ -338,20 +340,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                     preference.setChecked(false);
                 }
             }
-            findPreference("download_path").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener()
-            {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o)
-                {
-                    if(o instanceof String && ((String) o).matches("[\\s\\S]*\\S[\\s\\S]*"))
-                    {
-                        return true;
-                    }
-                    Toast.makeText(getContext(), getString(R.string.toast_invalid_path), Toast.LENGTH_SHORT).show();
-                    ((MyEditTextPreference) preference).show();
-                    return false;
-                }
-            });
         }
     }
 

@@ -24,13 +24,13 @@
             android:defaultValue="https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0"/>
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/category_storage"
-        >
-        <com.roundel.fizyka.MyEditTextPreference
+        android:title="@string/category_storage">
+        <com.roundel.fizyka.PathValidationEditTextPreference
             android:key="download_path"
             android:title="@string/settings_path_title"
             android:summary="@string/settings_path_summary"
-            android:defaultValue="/fizyka/"/>
+            android:defaultValue="/fizyka/"
+            android:dialogLayout="@layout/edittext_layout"/>
         <SwitchPreference
             android:key="extract"
             android:title="@string/settings_extract_title"

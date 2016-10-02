@@ -58,6 +58,7 @@
     <string name="settings_url_summary">URL to the shared Dropbox folder</string>
     <string name="settings_extract_title">Extract</string>
     <string name="settings_extract_summary">Extract files after download</string>
+    <string name="settings_path_invalid">The path must start and end with a slash</string>
 
     <string name="category_notification">Notification</string>
     <string name="category_storage">Storage</string>
