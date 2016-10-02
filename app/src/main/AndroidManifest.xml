@@ -38,7 +38,7 @@
         </receiver>
         <receiver android:name=".DownloadButtonPressedBroadcastReceiver">
             <intent-filter>
-                <action android:name="ACTION_DOWNLOAD"/>
+                <action android:name="com.roundel.fizyka.ACTION_DOWNLOAD"/>
             </intent-filter>
         </receiver>
         <receiver android:name=".NotificationServiceStarterReceiver">
@@ -46,6 +46,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
                 <action android:name="android.intent.action.TIME_SET"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".ConnectionStateChangedReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
 

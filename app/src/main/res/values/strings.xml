@@ -74,7 +74,7 @@
 
     <!--Settings arrays-->
     <string-array name="refresh_time_name">
-        <!--<item>Debbug - 1min</item> -->            <!--TODO Remove in final release-->
+        <!--<item>Debug - 1min</item>-->             <!--TODO Remove in final release-->
         <item>@string/refresh_time1</item>
         <item>@string/refresh_time2</item>
         <item>@string/refresh_time3</item>
@@ -85,7 +85,7 @@
         <item>@string/refresh_time8</item>
     </string-array>
     <string-array name="refresh_time_value" translatable="false">
-        <!--<item>1</item>  -->                       <!--TODO Remove in final release-->
+        <!--<item>1</item>-->                         <!--TODO Remove in final release-->
         <item>30</item>
         <item>60</item>
         <item>120</item>

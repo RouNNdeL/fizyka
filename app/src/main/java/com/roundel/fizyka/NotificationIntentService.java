@@ -1,9 +1,9 @@
 package com.roundel.fizyka;
 
-import android.Manifest;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,25 +11,12 @@ import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
 
 public class NotificationIntentService extends IntentService
 {
@@ -38,7 +25,6 @@ public class NotificationIntentService extends IntentService
     private static final String ACTION_START = "ACTION_START";
     private static final String ACTION_DELETE = "ACTION_DELETE";
     private Date mRecentUpdate;
-    private String mFolderUrl;
 
     public NotificationIntentService() {
         super(NotificationIntentService.class.getSimpleName());
@@ -75,90 +61,79 @@ public class NotificationIntentService extends IntentService
     private void processDeleteNotification(Intent intent) {
         // Log something?
     }
-    public static DateFormat mDropboxDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-    private Date newestDate(List<String> array)
-    {
-        try{
-            Date newest = mDropboxDateFormat.parse(array.get(0));
-            Date current;
-            for (int i = 0; i < array.size(); i++)
-            {
-                current = mDropboxDateFormat.parse(array.get(i));
-                if(newest.before(current))
-                {
-                    newest = current;
-                }
-            }
-            return newest;
-        }
-        catch (ParseException e)
-        {
-            Log.e("DATES", e.getMessage());
-            return new Date();
-        }
-
-    }
     private void processStartNotification() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        mFolderUrl = sp.getString("download_url", "https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0");
+        String mFolderUrl = sp.getString("download_url", "https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0");
         try
         {
-
-            mRecentUpdate = mDropboxDateFormat.parse(sp.getString("date", "Thu, 01 Jan 1970 00:00:00 +0000"));
+            mRecentUpdate = MainActivity.mDropboxDateFormat.parse(sp.getString("date", "Thu, 01 Jan 1970 00:00:00 +0000"));
         }catch (ParseException e)
         {
             Log.d("DATE", e.getMessage());
         }
-        DropboxMetadata dropboxMetadata= new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
+        if(MainActivity.isOnline(getApplicationContext()))
         {
-            @Override
-            public void onTaskEnd(String result)
+            DropboxMetadata dropboxMetadata= new DropboxMetadata(MainActivity.mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
             {
-                try
+                @Override
+                public void onTaskEnd(String result)
                 {
-                    Date date = mDropboxDateFormat.parse(result);
-                    if(date.after(mRecentUpdate))
+                    try
                     {
-                        Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                        Intent downloadIntent = new Intent();
-                        downloadIntent.setAction("ACTION_DOWNLOAD");
-                        downloadIntent.putExtra("DATE", mDropboxDateFormat.format(date));
-                        PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                        final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-                        builder.setContentTitle(getString(R.string.notify_title))
-                                .setAutoCancel(true)
-                                .setColor(getColor(R.color.colorPrimary))
-                                .setContentText(getString(R.string.notify_desc))
-                                .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
-                                .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.notify_button), pendingDownloadIntent)
-                                .setSound(uri);
+                        Date date;
+                        date = MainActivity.mDropboxDateFormat.parse(result);
+                        if(date.after(mRecentUpdate))
+                        {
+                            Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Intent downloadIntent = new Intent();
+                            downloadIntent.setAction("com.roundel.fizyka.ACTION_DOWNLOAD");
+                            downloadIntent.putExtra("DATE", result);
+                            PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                            final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+                            builder.setContentTitle(getString(R.string.notify_title))
+                                    .setAutoCancel(true)
+                                    .setColor(getColor(R.color.colorPrimary))
+                                    .setContentText(getString(R.string.notify_desc))
+                                    .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
+                                    .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.notify_button), pendingDownloadIntent)
+                                    .setSound(uri);
 
-                        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                        builder.setContentIntent(pendingIntent);
-                        builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                            builder.setContentIntent(pendingIntent);
+                            builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
 
-                        final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                        manager.notify(NOTIFICATION_ID, builder.build());
+                            final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                            manager.notify(NOTIFICATION_ID, builder.build());
+                        }
+                        else
+                        {
+                            Log.d("NOTIFY", "No update");
+                        }
                     }
-                    else
+                    catch (ParseException e)
                     {
-                        Log.d("NOTIFY", "No update");
+
                     }
                 }
-                catch (ParseException e)
+
+                @Override
+                public void onTaskStart()
                 {
 
                 }
-            }
+            });
+            dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
+        }
+        else
+        {
+            Log.d("NOTIFY", "No network connection, postponing the NotificationIntentService");
+            ComponentName receiver = new ComponentName(getApplicationContext(), ConnectionStateChangedReceiver.class);
 
-            @Override
-            public void onTaskStart()
-            {
+            PackageManager pm = getApplicationContext().getPackageManager();
 
-            }
-        });
-        dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
-
-
+            pm.setComponentEnabledSetting(receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                    PackageManager.DONT_KILL_APP);
+        }
     }
 }

@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                 dialog.show(getFragmentManager(), "tag");
                 return true;
             case R.id.menu_refresh:
-                if(isOnline())
+                if(isOnline(this))
                 {
                     DropboxMetadata dropboxMetadata= new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
                     {
@@ -199,9 +199,9 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         }
     }
 
-    private boolean isOnline() {
+    public static boolean isOnline(Context context) {
         ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return (netInfo != null) && netInfo.isConnectedOrConnecting();
     }

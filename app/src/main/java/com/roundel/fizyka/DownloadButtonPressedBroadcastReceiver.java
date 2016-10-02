@@ -13,7 +13,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
  */
 public class DownloadButtonPressedBroadcastReceiver extends WakefulBroadcastReceiver
 {
-    private final String ACTION_DOWNLOAD = "ACTION_DOWNLOAD";
+    private final String ACTION_DOWNLOAD = "com.roundel.fizyka.ACTION_DOWNLOAD";
     @Override
     public void onReceive(Context context, Intent intent)
     {
