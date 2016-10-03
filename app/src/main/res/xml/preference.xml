@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:validation="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
         android:title="@string/category_notification">
         <SwitchPreference
@@ -17,20 +18,23 @@
             android:defaultValue="720"
             android:entries="@array/refresh_time_name"
             android:entryValues="@array/refresh_time_value"/>
-        <EditTextPreference
+        <com.roundel.fizyka.ValidatingEditTextPreference
             android:key="download_url"
             android:title="@string/settings_url_title"
             android:summary="@string/settings_url_summary"
-            android:defaultValue="https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0"/>
+            android:defaultValue="https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0"
+            android:dialogLayout="@layout/edittext_validator_layout"
+            validation:type="url"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/category_storage">
-        <com.roundel.fizyka.PathValidationEditTextPreference
+        <com.roundel.fizyka.ValidatingEditTextPreference
             android:key="download_path"
             android:title="@string/settings_path_title"
             android:summary="@string/settings_path_summary"
             android:defaultValue="/fizyka/"
-            android:dialogLayout="@layout/edittext_layout"/>
+            android:dialogLayout="@layout/edittext_validator_layout"
+            validation:type="path"/>
         <SwitchPreference
             android:key="extract"
             android:title="@string/settings_extract_title"

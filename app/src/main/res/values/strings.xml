@@ -58,7 +58,9 @@
     <string name="settings_url_summary">URL to the shared Dropbox folder</string>
     <string name="settings_extract_title">Extract</string>
     <string name="settings_extract_summary">Extract files after download</string>
-    <string name="settings_path_invalid">The path must start and end with a slash</string>
+    <string name="settings_path_invalid_slash">The path must start and end with a slash</string>
+    <string name="settings_path_invalid_chars">The path name is invalid</string>
+    <string name="settings_url_invalid">The Dropbox url is invalid</string>
 
     <string name="category_notification">Notification</string>
     <string name="category_storage">Storage</string>
@@ -100,4 +102,5 @@
     <!--DO NOT EDIT-->
     <string name="api_url" translatable="false">https://api.dropbox.com/1/metadata/link</string>
     <string name="file_name" translatable="false">fizyka.zip</string>
+    <string name="settings_path_invalid"></string>
 </resources>

@@ -2,6 +2,7 @@ package com.roundel.fizyka;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.text.Editable;
@@ -16,24 +17,36 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.support.design.widget.TextInputLayout;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by RouNdeL on 2016-09-30.
  */
-public class PathValidationEditTextPreference extends EditTextPreference
+public class ValidatingEditTextPreference extends EditTextPreference
 {
     private String TAG = "VALIDATOR";
     private EditText mEditText;
-    public PathValidationEditTextPreference(Context context) {
+    private int mValidationType;
+    private final int VALIDATION_PATH = 0;
+    private final int VALIDATION_URL = 1;
+    public ValidatingEditTextPreference(Context context) {
         super(context);
         //Auto-generated constructor stub
     }
 
-    public PathValidationEditTextPreference(Context context, AttributeSet attrs) {
+    public ValidatingEditTextPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //Auto-generated constructor stub
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ValidatingEditTextPreference, 0, 0);
+
+        try {
+            mValidationType = a.getInteger(R.styleable.ValidatingEditTextPreference_type, VALIDATION_PATH);
+        } finally {
+            a.recycle();
+        }
     }
 
-    public PathValidationEditTextPreference(Context context, AttributeSet attrs, int defStyle) {
+    public ValidatingEditTextPreference(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         //Auto-generated constructor stub
     }
@@ -89,13 +102,47 @@ public class PathValidationEditTextPreference extends EditTextPreference
 
         public void performValidation()
         {
-            EditText editText = getEditText();
+            String text = getEditText().getText().toString();
+            TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
+            if(mValidationType == VALIDATION_PATH)
+            {
+                if(! text.matches("^(\\/[^\\/]+)+\\/{1}$"))
+                {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getContext().getString(R.string.settings_path_invalid_slash));
+                }
+                else if(! text.matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
+                {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getContext().getString(R.string.settings_path_invalid_chars));
+                }
+                else
+                {
+                    theDialog.dismiss();
+                    ValidatingEditTextPreference.this.onClick(theDialog, AlertDialog.BUTTON_POSITIVE);
+                }
+            }
+            else if(mValidationType == VALIDATION_URL)
+            {
+                Pattern p = Pattern.compile("^(http[s]*?:\\/\\/([\\w\\d]+\\.)?)*(www.)*dropbox\\.com\\/sh\\/");
+                Matcher m = p.matcher(text);
+                if(! m.find())
+                {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getContext().getString(R.string.settings_url_invalid));
+                }
+                else
+                {
+                    theDialog.dismiss();
+                    ValidatingEditTextPreference.this.onClick(theDialog, AlertDialog.BUTTON_POSITIVE);
+                }
+            }
             //if(editText.getText().toString().matches("[\\s\\S]*\\S[\\s\\S]*"))
-            if(editText.getText().toString().matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
+            /*if(text.matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
             {
                 Log.d(TAG, "Matches the pattern");
                 theDialog.dismiss();
-                PathValidationEditTextPreference.this.onClick(theDialog, AlertDialog.BUTTON_POSITIVE);
+                ValidatingEditTextPreference.this.onClick(theDialog, AlertDialog.BUTTON_POSITIVE);
             }
             else
             {
@@ -103,7 +150,7 @@ public class PathValidationEditTextPreference extends EditTextPreference
                 TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
                 textInputLayout.setEnabled(true);
                 textInputLayout.setError(getContext().getString(R.string.settings_path_invalid));
-            }
+            }*/
         }
 
         @Override

@@ -54,5 +54,7 @@
     <string name="toast_error_not_found">Folder nie został odnaleziony na Dropboxie</string>
     <string name="toast_error_unknown">Wystąpił nieznany błąd wystąpił z linkiem do Dropboxa</string>
     <string name="toast_error_connection_timed_out">Przekroczono limit czasu połączenia</string>
-    <string name="settings_path_invalid">Ścieżka powinna zaczynać i kończyć sie slashem</string>
+    <string name="settings_path_invalid_chars">Ścieżka jest nieprawidłowa</string>
+    <string name="settings_path_invalid_slash">Ścieżka powinna zaczynać i kończyć sie slashem</string>
+    <string name="settings_url_invalid">Link to Dropboxa jest nieprawidłowy</string>
 </resources>
