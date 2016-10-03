@@ -12,13 +12,9 @@ import java.io.File;
  */
 public class DropboxDownloader
 {
-    private String TAG = "FILE";
     private String mDownloadURL;
     private String mPath;
-    private DownloadManager downloadManager;
     public long mDownloadReference;
-
-    private Float mDownloadProgress;
 
     public DropboxDownloader(String url, String path)
     {
@@ -27,19 +23,10 @@ public class DropboxDownloader
     }
     public void start(Context context)
     {
-        String filesDir = mPath;
-        File file = new File(Environment.getExternalStorageDirectory()+mPath+"fizyka.zip");
-        File fileOld = new File(Environment.getExternalStorageDirectory()+mPath+"fizyka.zip");
-        if(fileOld.exists())
-        {
-            fileOld.delete();
-        }
-        if(file.exists())
-        {
-            file.renameTo(new File(filesDir+"fizyka.zip.old"));
-            file.delete();
-        }
-        downloadManager = (DownloadManager) context.getSystemService(context.DOWNLOAD_SERVICE);
+        File file = new File(Environment.getExternalStorageDirectory()+mPath+context.getString(R.string.file_name));
+        file.delete();
+
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri Download_Uri = Uri.parse(mDownloadURL);
         DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
@@ -47,7 +34,7 @@ public class DropboxDownloader
         request.setAllowedOverRoaming(false);
         request.setTitle(context.getString(R.string.download_title));
         request.setDescription(context.getString(R.string.download_disc));
-        request.setDestinationInExternalPublicDir(mPath, "fizyka.zip");
+        request.setDestinationInExternalPublicDir(mPath, context.getString(R.string.file_name));
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE);
         request.allowScanningByMediaScanner();
         request.setMimeType("application/zip");

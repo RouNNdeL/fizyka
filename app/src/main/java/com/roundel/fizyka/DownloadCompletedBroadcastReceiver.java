@@ -35,7 +35,7 @@ public class DownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
 
             Intent openFile = new Intent();
             openFile.setAction(android.content.Intent.ACTION_VIEW);
-            File file = new File(Environment.getExternalStorageDirectory() + folderPath + "fizyka.zip"); // set your audio path
+            File file = new File(Environment.getExternalStorageDirectory() + folderPath + context.getString(R.string.file_name)); // set your audio path
             openFile.setDataAndType(Uri.fromFile(file), "application/zip");
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, NOTIFICATION_ID, openFile, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -57,7 +57,7 @@ public class DownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
                 UnzipUtility zip = new UnzipUtility();
                 try
                 {
-                    zip.unzip(Environment.getExternalStorageDirectory() + folderPath + "fizyka.zip", Environment.getExternalStorageDirectory() + folderPath);
+                    zip.unzip(Environment.getExternalStorageDirectory() + folderPath + context.getString(R.string.file_name), Environment.getExternalStorageDirectory() + folderPath);
                 } catch (IOException e)
                 {
                     Log.e("ZIP", e.getMessage());
