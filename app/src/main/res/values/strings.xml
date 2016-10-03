@@ -102,5 +102,4 @@
     <!--DO NOT EDIT-->
     <string name="api_url" translatable="false">https://api.dropbox.com/1/metadata/link</string>
     <string name="file_name" translatable="false">.fizyka.zip</string>
-    <string name="settings_path_invalid"></string>
 </resources>
