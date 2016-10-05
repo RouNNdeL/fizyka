@@ -1,7 +1,9 @@
 package com.roundel.fizyka;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -16,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.support.design.widget.TextInputLayout;
+import android.widget.Toast;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +29,8 @@ import java.util.regex.Pattern;
 public class ValidatingEditTextPreference extends EditTextPreference
 {
     private String TAG = "VALIDATOR";
+    private final String POSITIVE_BUTTON_TAG = "positiveButton";
+    private final String NEUTRAL_BUTTON_TAG = "neutralButton";
     private EditText mEditText;
     private int mValidationType;
     private final int VALIDATION_PATH = 0;
@@ -69,24 +74,36 @@ public class ValidatingEditTextPreference extends EditTextPreference
     }
 
     @Override
+    protected void onPrepareDialogBuilder(AlertDialog.Builder builder)
+    {
+        super.onPrepareDialogBuilder(builder);
+        if(mValidationType == VALIDATION_URL)
+            builder.setNeutralButton(getContext().getString(R.string.validation_url_button), new ValidatingOnClickListener(((AlertDialog) getDialog())));
+    }
+
+    @Override
     protected void showDialog(Bundle state) {
         super.showDialog(state);
-        Log.d(TAG, "Works");
         if (super.getDialog() instanceof AlertDialog) {
-            Log.d(TAG, "Works better");
-            final AlertDialog theDialog = (AlertDialog) super.getDialog();
+            final AlertDialog dialog = (AlertDialog) super.getDialog();
 
-            Button b = theDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button buttonPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            Button buttonNeutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
 
-            ValidatingOnClickListener listener = new ValidatingOnClickListener(theDialog);
-            b.setOnClickListener(listener);
+            ValidatingOnClickListener listener = new ValidatingOnClickListener(dialog);
+            buttonPositive.setOnClickListener(listener);
+            buttonNeutral.setOnClickListener(listener);
+            buttonPositive.setTag(POSITIVE_BUTTON_TAG);
+            buttonNeutral.setTag(NEUTRAL_BUTTON_TAG);
 
             getEditText().setOnEditorActionListener(listener);
             getEditText().addTextChangedListener(listener);
+
+
         }
     }
 
-    private final class ValidatingOnClickListener implements View.OnClickListener, TextView.OnEditorActionListener, TextWatcher
+    private final class ValidatingOnClickListener implements View.OnClickListener, TextView.OnEditorActionListener, TextWatcher, DialogInterface.OnClickListener
     {
         private final AlertDialog theDialog;
         private ValidatingOnClickListener(AlertDialog theDialog)
@@ -97,10 +114,20 @@ public class ValidatingEditTextPreference extends EditTextPreference
         @Override
         public void onClick(View view)
         {
-            performValidation();
+            if(view.getTag().equals(POSITIVE_BUTTON_TAG))
+            {
+                regexValidation();
+            }
+            else if(view.getTag().equals(NEUTRAL_BUTTON_TAG))
+            {
+                urlValidation();
+            }
         }
 
-        public void performValidation()
+        @Override
+        public void onClick(DialogInterface dialogInterface, int i) {}
+
+        public void regexValidation()
         {
             String text = getEditText().getText().toString();
             TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
@@ -109,12 +136,12 @@ public class ValidatingEditTextPreference extends EditTextPreference
                 if(! text.matches("^(\\/[^\\/]+)+\\/{1}$"))
                 {
                     textInputLayout.setErrorEnabled(true);
-                    textInputLayout.setError(getContext().getString(R.string.settings_path_invalid_slash));
+                    textInputLayout.setError(getContext().getString(R.string.validation_path_invalid_slash));
                 }
                 else if(! text.matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
                 {
                     textInputLayout.setErrorEnabled(true);
-                    textInputLayout.setError(getContext().getString(R.string.settings_path_invalid_chars));
+                    textInputLayout.setError(getContext().getString(R.string.validation_path_invalid_chars));
                 }
                 else
                 {
@@ -126,10 +153,15 @@ public class ValidatingEditTextPreference extends EditTextPreference
             {
                 Pattern p = Pattern.compile("^(http[s]*?:\\/\\/([\\w\\d]+\\.)?)*(www.)*dropbox\\.com\\/sh\\/");
                 Matcher m = p.matcher(text);
-                if(! m.find())
+                if(text.isEmpty())
                 {
                     textInputLayout.setErrorEnabled(true);
-                    textInputLayout.setError(getContext().getString(R.string.settings_url_invalid));
+                    textInputLayout.setError(getContext().getString(R.string.validation_url_empty));
+                }
+                else if(! m.find())
+                {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getContext().getString(R.string.validation_url_invalid_regex));
                 }
                 else
                 {
@@ -137,26 +169,77 @@ public class ValidatingEditTextPreference extends EditTextPreference
                     ValidatingEditTextPreference.this.onClick(theDialog, AlertDialog.BUTTON_POSITIVE);
                 }
             }
-            //if(editText.getText().toString().matches("[\\s\\S]*\\S[\\s\\S]*"))
-            /*if(text.matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
+        }
+
+        public void urlValidation()
+        {
+            if(mValidationType == VALIDATION_URL)
             {
-                Log.d(TAG, "Matches the pattern");
-                theDialog.dismiss();
-                ValidatingEditTextPreference.this.onClick(theDialog, AlertDialog.BUTTON_POSITIVE);
+                final TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
+                String text = getEditText().getText().toString();
+                Pattern p = Pattern.compile("^(http[s]*?:\\/\\/([\\w\\d]+\\.)?)*(www.)*dropbox\\.com\\/sh\\/");
+                Matcher m = p.matcher(text);
+                if(text.isEmpty())
+                {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getContext().getString(R.string.validation_url_empty));
+                }
+                else if(! m.find())
+                {
+                    textInputLayout.setErrorEnabled(true);
+                    textInputLayout.setError(getContext().getString(R.string.validation_url_invalid_regex));
+                }
+                else
+                {
+                    if (MainActivity.isOnline(getContext()))
+                    {
+                        DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
+                        {
+                            @Override
+                            public void onTaskStart()
+                            {
+                                Toast.makeText(getContext(), getContext().getString(R.string.validation_url_refresh), Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onTaskEnd(String result)
+                            {
+                                Log.d(TAG, result);
+                                switch (result)
+                                {
+                                    case DropboxMetadata.NO_ERROR:
+                                        textInputLayout.setErrorEnabled(false);
+                                        Toast.makeText(getContext(), getContext().getString(R.string.validation_url_ok), Toast.LENGTH_SHORT).show();
+                                        break;
+                                    case DropboxMetadata.ERROR_NOT_FOUND:
+                                        textInputLayout.setErrorEnabled(true);
+                                        textInputLayout.setError(getContext().getString(R.string.validation_url_not_found));
+                                        break;
+                                    case DropboxMetadata.ERROR_FORBIDDEN:
+                                        textInputLayout.setErrorEnabled(true);
+                                        textInputLayout.setError(getContext().getString(R.string.validation_url_no_access));
+                                        break;
+                                    case DropboxMetadata.ERROR_UNKNOWN:
+                                        textInputLayout.setErrorEnabled(true);
+                                        textInputLayout.setError(getContext().getString(R.string.validation_url_unknown));
+                                        break;
+                                    case DropboxMetadata.ERROR_CONNECTION_TIMED_OUT:
+                                        Toast.makeText(getContext(), getContext().getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        validator.execute(getContext().getString(R.string.api_url), text);
+                    } else
+                    {
+                        Toast.makeText(getContext(), getContext().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
-            else
-            {
-                Log.d(TAG, "Does not match the pattern");
-                TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
-                textInputLayout.setEnabled(true);
-                textInputLayout.setError(getContext().getString(R.string.settings_path_invalid));
-            }*/
         }
 
         @Override
         public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent)
         {
-            Log.d(TAG, "Action");
             TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
             textInputLayout.setErrorEnabled(false);
             return false;
@@ -165,7 +248,6 @@ public class ValidatingEditTextPreference extends EditTextPreference
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2)
         {
-            Log.d(TAG, "Text changed");
             TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
             textInputLayout.setErrorEnabled(false);
         }

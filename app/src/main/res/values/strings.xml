@@ -13,6 +13,18 @@
     <string name="update_dialog_title">New files</string>
     <string name="update_dialog_desc">There is a new version available, do you want to download?</string>
 
+    <!--Validation strings-->
+    <string name="validation_url_button">Validate</string>
+    <string name="validation_path_invalid_slash">The path must start and end with a slash</string>
+    <string name="validation_path_invalid_chars">The path name is invalid</string>
+    <string name="validation_url_invalid_regex">The Dropbox url is invalid</string>
+    <string name="validation_url_not_found">The Dropbox url was not found</string>
+    <string name="validation_url_no_access">No permission to access that folder</string>
+    <string name="validation_url_unknown">Unknown error</string>
+    <string name="validation_url_refresh">Checking your url…</string>
+    <string name="validation_url_ok">Your url is OK</string>
+    <string name="validation_url_empty">The url must not be empty</string>
+
     <!--Toast strings-->
     <string name="toast_no_network">There is no network connection</string>
     <string name="toast_no_updates">No updates found</string>
@@ -58,9 +70,7 @@
     <string name="settings_url_summary">URL to the shared Dropbox folder</string>
     <string name="settings_extract_title">Extract</string>
     <string name="settings_extract_summary">Extract files after download</string>
-    <string name="settings_path_invalid_slash">The path must start and end with a slash</string>
-    <string name="settings_path_invalid_chars">The path name is invalid</string>
-    <string name="settings_url_invalid">The Dropbox url is invalid</string>
+
 
     <string name="category_notification">Notification</string>
     <string name="category_storage">Storage</string>

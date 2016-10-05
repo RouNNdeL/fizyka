@@ -32,7 +32,7 @@
     <string name="category_storage">Pliki</string>
     <string name="no_update_dialog_desc">Nowa wersja może nie być dostępna, pobrać mimo tego?</string>
     <string name="no_update_dialog_title">Pobieranie</string>
-    <string name="toast_no_updates">Nie znaleziono aktualizacji...</string>
+    <string name="toast_no_updates">Nie znaleziono aktualizacji…</string>
     <string name="permission_allowed_notification">Teraz możesz włączyć powiadomienia</string>
     <string name="permission_denied_notification">By korzystać z powiadomień, zezwól na dostęp do plików</string>
     <string name="toast_refresh_start">Aktualizcja została rozpoczęta</string>
@@ -54,7 +54,14 @@
     <string name="toast_error_not_found">Folder nie został odnaleziony na Dropboxie</string>
     <string name="toast_error_unknown">Wystąpił nieznany błąd wystąpił z linkiem do Dropboxa</string>
     <string name="toast_error_connection_timed_out">Przekroczono limit czasu połączenia</string>
-    <string name="settings_path_invalid_chars">Ścieżka jest nieprawidłowa</string>
-    <string name="settings_path_invalid_slash">Ścieżka powinna zaczynać i kończyć sie slashem</string>
-    <string name="settings_url_invalid">Link to Dropboxa jest nieprawidłowy</string>
+    <string name="validation_path_invalid_chars">Ścieżka jest nieprawidłowa</string>
+    <string name="validation_path_invalid_slash">Ścieżka powinna zaczynać i kończyć sie slashem</string>
+    <string name="validation_url_button">Zweryfikuj</string>
+    <string name="validation_url_invalid_regex">Link to Dropboxa jest nieprawidłowy</string>
+    <string name="validation_url_no_access">Brak uprawnień do folderu</string>
+    <string name="validation_url_not_found">Folder nie został odnaleziony</string>
+    <string name="validation_url_ok">Link jest poprawny</string>
+    <string name="validation_url_refresh">Trwa sprawdzanie linku…</string>
+    <string name="validation_url_unknown">Nieznany błąd</string>
+    <string name="validation_url_empty">Link nie może być pusty</string>
 </resources>
