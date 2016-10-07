@@ -151,7 +151,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
             }
             else if(mValidationType == VALIDATION_URL)
             {
-                Pattern p = Pattern.compile("^(http[s]*?:\\/\\/([\\w\\d]+\\.)?)*(www.)*dropbox\\.com\\/sh\\/");
+                Pattern p = Pattern.compile("^(http[s]*?:\\/\\/)?(www.)?dropbox\\.com\\/sh\\/");
                 Matcher m = p.matcher(text);
                 if(text.isEmpty())
                 {
