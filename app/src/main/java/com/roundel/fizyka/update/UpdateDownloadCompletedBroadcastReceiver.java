@@ -49,7 +49,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADING);
 
-            if (UpdateDownloader.checkIfNew(info.versionName, mVersion))
+            if (Objects.equals(info.versionName, mVersion))
             {
                 Intent installIntent = new Intent();
                 installIntent.setAction(Intent.ACTION_VIEW);
