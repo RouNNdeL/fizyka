@@ -18,7 +18,7 @@
             android:defaultValue="720"
             android:entries="@array/refresh_time_name"
             android:entryValues="@array/refresh_time_value"/>
-        <com.roundel.fizyka.ValidatingEditTextPreference
+        <com.roundel.fizyka.dropbox.ValidatingEditTextPreference
             android:key="download_url"
             android:title="@string/settings_url_title"
             android:summary="@string/settings_url_summary"
@@ -28,7 +28,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/category_storage">
-        <com.roundel.fizyka.ValidatingEditTextPreference
+        <com.roundel.fizyka.dropbox.ValidatingEditTextPreference
             android:key="download_path"
             android:title="@string/settings_path_title"
             android:summary="@string/settings_path_summary"

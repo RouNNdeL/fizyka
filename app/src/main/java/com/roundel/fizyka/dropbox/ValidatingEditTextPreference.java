@@ -1,7 +1,6 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.dropbox;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
@@ -19,6 +18,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.support.design.widget.TextInputLayout;
 import android.widget.Toast;
+
+import com.roundel.fizyka.R;
+import com.roundel.fizyka.activity.MainActivity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

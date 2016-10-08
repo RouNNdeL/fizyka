@@ -47,7 +47,7 @@
     <string name="about_version">Wersja:</string>
     <string name="download_completed_desc">Pobieranie zakończone, kliknij aby otworzyć plik</string>
     <string name="download_completed_title">Pobieranie zakończone</string>
-    <string name="notify_button">Pobierz</string>
+    <string name="download_notify_button">Pobierz</string>
     <string name="about_developer">Twórca: Krzysiek Zdulski</string>
     <string name="toast_invalid_path">Ścieżka jest nieprawidłowa</string>
     <string name="toast_error_forbidden">Nie masz uprawnień by mieć dostęp do tego folderu</string>

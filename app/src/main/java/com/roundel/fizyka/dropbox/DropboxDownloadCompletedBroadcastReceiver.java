@@ -1,4 +1,4 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.dropbox;
 
 import android.app.DownloadManager;
 import android.app.NotificationManager;
@@ -13,20 +13,32 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
+import com.roundel.fizyka.R;
+import com.roundel.fizyka.UnzipUtility;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-09-27.
  */
-public class DownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
+public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
 {
     public static int NOTIFICATION_ID = 2;
+    private long mDownloadReference;
+
+    public DropboxDownloadCompletedBroadcastReceiver(Long downloadReference)
+    {
+        this.mDownloadReference = downloadReference;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent)
     {
         String action = intent.getAction();
-        if(action == DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        Long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+        if(Objects.equals(action, DownloadManager.ACTION_DOWNLOAD_COMPLETE) && Objects.equals(reference, mDownloadReference))
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String folderPath = prefs.getString("download_path", "/fizyka/");
@@ -35,7 +47,7 @@ public class DownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
 
             Intent openFile = new Intent();
             openFile.setAction(android.content.Intent.ACTION_VIEW);
-            File file = new File(Environment.getExternalStorageDirectory() + folderPath + context.getString(R.string.file_name)); // set your audio path
+            File file = new File(Environment.getExternalStorageDirectory() + folderPath + context.getString(R.string.file_name));
             openFile.setDataAndType(Uri.fromFile(file), "application/zip");
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, NOTIFICATION_ID, openFile, PendingIntent.FLAG_CANCEL_CURRENT);

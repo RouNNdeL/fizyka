@@ -1,4 +1,4 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.dropbox;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -15,13 +15,16 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
+import com.roundel.fizyka.R;
+import com.roundel.fizyka.activity.MainActivity;
+
 import java.text.ParseException;
 import java.util.Date;
 
 public class NotificationIntentService extends IntentService
 {
 
-    private static final int NOTIFICATION_ID = 1;
+    public static final int NOTIFICATION_ID = 1;
     private static final String ACTION_START = "ACTION_START";
     private static final String ACTION_DELETE = "ACTION_DELETE";
     private Date mRecentUpdate;
@@ -86,16 +89,17 @@ public class NotificationIntentService extends IntentService
                         {
                             Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                             Intent downloadIntent = new Intent();
-                            downloadIntent.setAction("com.roundel.fizyka.ACTION_DOWNLOAD");
+                            downloadIntent.setAction(DropboxDownloader.ACTION_DOWNLOAD);
                             downloadIntent.putExtra("DATE", result);
                             PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
                             final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                             builder.setContentTitle(getString(R.string.notify_title))
-                                    .setAutoCancel(true)
+                                    .setAutoCancel(false)
                                     .setColor(getColor(R.color.colorPrimary))
                                     .setContentText(getString(R.string.notify_desc))
                                     .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
-                                    .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.notify_button), pendingDownloadIntent)
+                                    .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
                                     .setSound(uri);
 
                             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);

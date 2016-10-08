@@ -1,17 +1,18 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
@@ -28,6 +29,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.roundel.fizyka.dropbox.DropboxDownloadCompletedBroadcastReceiver;
+import com.roundel.fizyka.dropbox.DropboxDownloader;
+import com.roundel.fizyka.dropbox.DropboxLinkValidator;
+import com.roundel.fizyka.dropbox.DropboxMetadata;
+import com.roundel.fizyka.dropbox.NotificationEventReceiver;
+import com.roundel.fizyka.R;
+import com.roundel.fizyka.RestartDialogFragment;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,7 +51,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     public static Date mNewRecentDate;
     public static boolean mExtract;
     public static DateFormat mDropboxDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-    private DropboxDownloader mDownloader = new DropboxDownloader("", "/");
 
     public static String UNIX_BEGGING_DATE = "Thu, 01 Jan 1970 00:00:00 +0000";
 
@@ -188,7 +196,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
 
     private void startDownload(Boolean newVersionAvailable)
     {
-        mDownloader = new DropboxDownloader(mFolderUrl.replace("?dl=0", "?dl=1"), mFolderPath);
+        final DropboxDownloader downloader = new DropboxDownloader(mFolderUrl.replace("?dl=0", "?dl=1"), mFolderPath);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
@@ -205,12 +213,15 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                 builder.setTitle(getString(R.string.no_update_dialog_title));
                 builder.setMessage(getString(R.string.no_update_dialog_desc));
             }
-            builder.setPositiveButton(getString(R.string.notify_button), new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.download_notify_button), new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface p1, int p2)
                 {
-                    mDownloader.start(getApplicationContext());
+                    downloader.start(getApplicationContext());
+                    IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+                    DropboxDownloadCompletedBroadcastReceiver receiver = new DropboxDownloadCompletedBroadcastReceiver(downloader.getDownloadReference());
+                    registerReceiver(receiver, filter);
                     saveData(mDropboxDateFormat.format(mNewRecentDate));
                 }
             });

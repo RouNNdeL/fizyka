@@ -1,9 +1,11 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.dropbox;
 
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+
+import com.roundel.fizyka.R;
 
 import java.io.File;
 
@@ -12,9 +14,11 @@ import java.io.File;
  */
 public class DropboxDownloader
 {
+    public final static String ACTION_DOWNLOAD = "com.roundel.fizyka.ACTION_DOWNLOAD";
+
     private String mDownloadURL;
     private String mPath;
-    public long mDownloadReference;
+    private long mDownloadReference;
 
     public DropboxDownloader(String url, String path)
     {
@@ -24,7 +28,7 @@ public class DropboxDownloader
     public void start(Context context)
     {
         File file = new File(Environment.getExternalStorageDirectory()+mPath+context.getString(R.string.file_name));
-        file.delete();
+        if(file.exists()) file.delete();
 
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri Download_Uri = Uri.parse(mDownloadURL);

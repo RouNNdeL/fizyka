@@ -1,4 +1,4 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.dropbox;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

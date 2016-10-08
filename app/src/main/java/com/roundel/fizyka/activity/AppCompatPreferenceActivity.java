@@ -1,4 +1,4 @@
-package com.roundel.fizyka;
+package com.roundel.fizyka.activity;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
