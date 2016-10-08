@@ -48,7 +48,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADING);
 
-            if (checkIfNew(info.versionName, mVersion))
+            if (!checkIfNew(info.versionName, mVersion))
             {
                 Intent installIntent = new Intent();
                 installIntent.setAction(Intent.ACTION_VIEW);
@@ -59,7 +59,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
                 builder.setSmallIcon(R.drawable.ic_file_download_white_24dp)
                         .setContentTitle(context.getString(R.string.update_completed_title))
-                        .setContentText(context.getString(R.string.update_completed_disc))
+                        .setContentText(String.format(context.getString(R.string.update_completed_disc), mVersion))
                         .setColor(context.getColor(R.color.colorPrimary))
                         .addAction(R.drawable.ic_system_update_black_24dp, context.getString(R.string.update_notify_button), pendingIntent);
 
@@ -76,15 +76,12 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                 {}
                 String body = String.format("Expected version: %s\nVersion found: %s\nVersion installed: %s", mVersion, info.versionName, versionInstalled);
                 Intent sendIntent = new Intent();
-                //sendIntent.addCategory(Intent.CATEGORY_APP_EMAIL);
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.setType("text/plain");
-                sendIntent.putExtra(Intent.EXTRA_EMAIL, "rounndel@gmail.com");
+                sendIntent.setData(Uri.parse("mailto:rounndel@gmail.com"));
+                sendIntent.setAction(Intent.ACTION_SENDTO);
                 sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Update error");
                 sendIntent.putExtra(Intent.EXTRA_TEXT, body);
-                sendIntent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
 
-                PendingIntent pendingIntent = PendingIntent.getActivity(context, UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADED, sendIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getActivity(context, UpdateDownloader.NOTIFICATION_UPDATE_ERROR, sendIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
                 builder.setSmallIcon(R.drawable.ic_error_outline_black_24dp)
                         .setContentTitle(context.getString(R.string.update_error_wrong_version_title))
@@ -92,7 +89,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                         .setColor(context.getColor(R.color.colorPrimary))
                         .addAction(R.drawable.ic_send_black_24dp, context.getString(R.string.update_error_notify_button), pendingIntent);
 
-                manager.notify(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADED, builder.build());
+                manager.notify(UpdateDownloader.NOTIFICATION_UPDATE_ERROR, builder.build());
             }
         }
     }
