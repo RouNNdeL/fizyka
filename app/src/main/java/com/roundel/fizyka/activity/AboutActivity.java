@@ -61,7 +61,6 @@ public class AboutActivity extends AppCompatActivity
             {
                 try
                 {
-                    Toast.makeText(AboutActivity.this, version, Toast.LENGTH_SHORT).show();
                     PackageManager manager = getApplicationContext().getPackageManager();
                     PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
                     if (checkIfNew(version, info.versionName))
