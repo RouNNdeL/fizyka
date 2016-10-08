@@ -3,20 +3,33 @@ package com.roundel.fizyka;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * Created by RouNdeL on 2016-10-05.
  */
 public class DropboxLinkValidator extends AsyncTask<String, String, String>
 {
-    DropboxLinkValidatorListener mListener;
+
+    public final static String NO_ERROR = "NO_ERROR";
+    public final static String ERROR_FORBIDDEN = "ERROR_FORBIDDEN";
+    public final static String ERROR_NOT_FOUND = "ERROR_NOT_FOUND";
+    public final static String ERROR_UNKNOWN = "ERROR_UNKNOWN";
+    public final static String ERROR_CONNECTION_TIMED_OUT = "ERROR_CONNECTION_TIMED_OUT";
+
+    private final String TAG = "DropboxLinkValidator";
+
+    private DropboxLinkValidatorListener mListener;
+
     public DropboxLinkValidator(DropboxLinkValidatorListener listener)
     {
         this.mListener = listener;
@@ -32,8 +45,8 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     @Override
     protected String doInBackground(String... params)
     {
-        String urlShared = params[1];
         String urlString = params[0];
+        String urlShared = params[1];
         String urlPath = "/";
         urlString += "?link="+urlShared+"&path="+urlPath;
         try {
@@ -58,28 +71,27 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
 
             if(HttpResponseCode == HttpURLConnection.HTTP_OK)
             {
-                return DropboxMetadata.NO_ERROR;
+                return NO_ERROR;
             }
             else if(HttpResponseCode == HttpURLConnection.HTTP_FORBIDDEN)
             {
-                return DropboxMetadata.ERROR_FORBIDDEN;
+                return ERROR_FORBIDDEN;
             }
             else if (HttpResponseCode == HttpURLConnection.HTTP_NOT_FOUND)
             {
-                return DropboxMetadata.ERROR_NOT_FOUND;
+                return ERROR_NOT_FOUND;
             }
             else
             {
-                return DropboxMetadata.ERROR_UNKNOWN;
+                return ERROR_UNKNOWN;
             }
 
-        } catch (Exception e) {
-
-            System.out.println(e.getMessage());
-
         }
-
-        return DropboxMetadata.ERROR_CONNECTION_TIMED_OUT;
+        catch (IOException|JSONException e)
+        {
+            Log.e(TAG, Arrays.toString(e.getStackTrace()));
+        }
+        return ERROR_CONNECTION_TIMED_OUT;
     }
 
     @Override

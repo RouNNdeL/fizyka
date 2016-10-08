@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  */
 public class ValidatingEditTextPreference extends EditTextPreference
 {
-    private String TAG = "VALIDATOR";
+    private String TAG = "PreferenceValidator";
     private final String POSITIVE_BUTTON_TAG = "positiveButton";
     private final String NEUTRAL_BUTTON_TAG = "neutralButton";
     private EditText mEditText;
@@ -207,23 +207,23 @@ public class ValidatingEditTextPreference extends EditTextPreference
                                 Log.d(TAG, result);
                                 switch (result)
                                 {
-                                    case DropboxMetadata.NO_ERROR:
+                                    case DropboxLinkValidator.NO_ERROR:
                                         textInputLayout.setErrorEnabled(false);
                                         Toast.makeText(getContext(), getContext().getString(R.string.validation_url_ok), Toast.LENGTH_SHORT).show();
                                         break;
-                                    case DropboxMetadata.ERROR_NOT_FOUND:
+                                    case DropboxLinkValidator.ERROR_NOT_FOUND:
                                         textInputLayout.setErrorEnabled(true);
                                         textInputLayout.setError(getContext().getString(R.string.validation_url_not_found));
                                         break;
-                                    case DropboxMetadata.ERROR_FORBIDDEN:
+                                    case DropboxLinkValidator.ERROR_FORBIDDEN:
                                         textInputLayout.setErrorEnabled(true);
                                         textInputLayout.setError(getContext().getString(R.string.validation_url_no_access));
                                         break;
-                                    case DropboxMetadata.ERROR_UNKNOWN:
+                                    case DropboxLinkValidator.ERROR_UNKNOWN:
                                         textInputLayout.setErrorEnabled(true);
                                         textInputLayout.setError(getContext().getString(R.string.validation_url_unknown));
                                         break;
-                                    case DropboxMetadata.ERROR_CONNECTION_TIMED_OUT:
+                                    case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
                                         Toast.makeText(getContext(), getContext().getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
                                 }
                             }

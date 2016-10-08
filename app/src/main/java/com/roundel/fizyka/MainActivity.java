@@ -15,6 +15,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -79,8 +80,14 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             case R.id.menu_refresh:
                 if(isOnline(this))
                 {
-                    DropboxMetadata dropboxMetadata= new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
+                    final DropboxMetadata dropboxMetadata = new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
                     {
+                        @Override
+                        public void onTaskStart()
+                        {
+
+                        }
+
                         @Override
                         public void onTaskEnd(String result)
                         {
@@ -93,26 +100,47 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                             }
                             catch (ParseException e)
                             {
-                                if(result.equals(DropboxMetadata.ERROR_FORBIDDEN))
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
-                                else if(result.equals(DropboxMetadata.ERROR_NOT_FOUND))
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
-                                else if(result.equals(DropboxMetadata.ERROR_CONNECTION_TIMED_OUT))
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
+
                             }
                         }
-
+                    });
+                    DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
+                    {
                         @Override
                         public void onTaskStart()
                         {
-                            Log.d("DATES", "Task started");
                             refresh(item);
                             Toast.makeText(MainActivity.this, getString(R.string.toast_refresh_start), Toast.LENGTH_SHORT).show();
                         }
+
+                        @Override
+                        public void onTaskEnd(String result)
+                        {
+                            switch (result)
+                            {
+                                case DropboxLinkValidator.NO_ERROR:
+                                    dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
+                                    break;
+                                case DropboxLinkValidator.ERROR_FORBIDDEN:
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
+                                    completeRefresh(item);
+                                    break;
+                                case DropboxLinkValidator.ERROR_NOT_FOUND:
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
+                                    completeRefresh(item);
+                                    break;
+                                case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
+                                    completeRefresh(item);
+                                    break;
+                                default:
+                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
+                                    completeRefresh(item);
+                                    break;
+                            }
+                        }
                     });
-                    dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
+                    validator.execute(getString(R.string.api_url), mFolderUrl);
                 }
                 else
                 {
@@ -134,7 +162,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         if(requestCode == NO_UPDATE && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
