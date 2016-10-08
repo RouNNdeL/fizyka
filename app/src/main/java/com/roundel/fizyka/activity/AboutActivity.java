@@ -20,9 +20,9 @@ import com.roundel.fizyka.update.UpdateChecker;
 import com.roundel.fizyka.update.UpdateDownloadCompletedBroadcastReceiver;
 import com.roundel.fizyka.update.UpdateDownloader;
 
-public class AboutActivity extends AppCompatActivity implements View.OnClickListener
+public class AboutActivity extends AppCompatActivity
 {
-
+    TextView newVersion;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -30,29 +30,25 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_about);
 
         final TextView versionHolder = (TextView) findViewById(R.id.versionHolder);
-        versionHolder.setOnClickListener(this);
+        newVersion = (TextView) findViewById(R.id.newVersion);
         try
         {
             PackageManager manager = this.getPackageManager();
             PackageInfo info = manager.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
-            versionHolder.setText(getString(R.string.about_version)+" "+info.versionName);
-        }
-        catch (PackageManager.NameNotFoundException e)
+            versionHolder.setText(getString(R.string.about_version) + " " + info.versionName);
+        } catch (PackageManager.NameNotFoundException e)
         {
             Log.e("ABOUT", e.getMessage());
         }
-        findViewById(R.id.github_mark).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.github_mark).setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/rounndel/fizyka")));
             }
         });
-    }
-
-    @Override
-    public void onClick(View view)
-    {
-        final UpdateChecker manager = new UpdateChecker(this, new UpdateChecker.UpdateCheckerListener()
+        final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
         {
             @Override
             public void onTaskStart()
@@ -68,16 +64,16 @@ public class AboutActivity extends AppCompatActivity implements View.OnClickList
                     Toast.makeText(AboutActivity.this, version, Toast.LENGTH_SHORT).show();
                     PackageManager manager = getApplicationContext().getPackageManager();
                     PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
-                    if(!checkIfNew(version, info.versionName))
+                    if (checkIfNew(version, info.versionName))
                     {
+                        newVersion.setText(getString(R.string.about_version_new_found) + " " + version);
                         UpdateDownloader downloader = new UpdateDownloader(version);
                         downloader.start(getApplicationContext());
                         IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
                         UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
                         registerReceiver(receiver, filter);
-                    }
-                }
-                catch (PackageManager.NameNotFoundException e)
+                    } else newVersion.setText(getString(R.string.about_version_new_not_found));
+                } catch (PackageManager.NameNotFoundException e)
                 {
                 }
             }

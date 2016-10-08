@@ -33,6 +33,13 @@
             android:id="@+id/versionHolder"
             android:layout_gravity="center_horizontal"
             android:textSize="15sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_version_new"
+            android:id="@+id/newVersion"
+            android:layout_gravity="center_horizontal"
+            android:textSize="15sp"/>
 
     </LinearLayout>
     <RelativeLayout

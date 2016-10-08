@@ -2,13 +2,17 @@ package com.roundel.fizyka.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,7 +21,9 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +42,9 @@ import com.roundel.fizyka.dropbox.DropboxMetadata;
 import com.roundel.fizyka.dropbox.NotificationEventReceiver;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.RestartDialogFragment;
+import com.roundel.fizyka.update.UpdateChecker;
+import com.roundel.fizyka.update.UpdateDownloadCompletedBroadcastReceiver;
+import com.roundel.fizyka.update.UpdateDownloader;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -64,6 +73,57 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         MyPreferenceFragment preferenceFragment = new MyPreferenceFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content, preferenceFragment).commit();
         loadData(this);
+
+        final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
+        {
+            @Override
+            public void onTaskStart()
+            {
+
+            }
+
+            @Override
+            public void onTaskEnd(final String version)
+            {
+                try
+                {
+                    PackageManager manager = getApplicationContext().getPackageManager();
+                    PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
+                    if(UpdateDownloader.checkIfNew(version, info.versionName))
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle(R.string.update_title)
+                                .setMessage(String.format(getString(R.string.update_disc), version))
+                                .setPositiveButton(R.string.download_notify_button, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+                                        UpdateDownloader downloader = new UpdateDownloader(version);
+                                        downloader.start(getApplicationContext());
+                                        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+                                        UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
+                                        getApplicationContext().registerReceiver(receiver, filter);
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i)
+                                    {
+
+                                    }
+                                });
+                        builder.create().show();
+
+                    }
+                }
+                catch (PackageManager.NameNotFoundException e)
+                {
+                }
+            }
+        });
+        manager.execute();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

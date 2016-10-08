@@ -64,4 +64,18 @@
     <string name="validation_url_refresh">Trwa sprawdzanie linku…</string>
     <string name="validation_url_unknown">Nieznany błąd</string>
     <string name="validation_url_empty">Link nie może być pusty</string>
+    <string name="update_completed_disc">Kliknij aby zainsatlowć wersje %s</string>
+    <string name="update_completed_title">Pobieranie zakończone</string>
+    <string name="update_disc">Wersja %s jest dostępna do pobrania</string>
+    <string name="update_error_notify_button">Wyślij</string>
+    <string name="update_error_wrong_version_disc">Wystapił błąd podczas aktuzlizacji</string>
+    <string name="about_version_new">Trwa sprawdzanie aktualizacji</string>
+    <string name="about_version_new_found">Nowa wersja:</string>
+    <string name="about_version_new_not_found">Nie znaleziono nowej wersji</string>
+    <string name="update_error_wrong_version_disc_long">Wystapił błąd podczas aktuzlizacji, proszę wysłać tę informację do dewelopera</string>
+    <string name="update_error_wrong_version_title">Error</string>
+    <string name="update_in_progress_disc">Pobieranie wersji %s</string>
+    <string name="update_in_progress_title">Pobieranie aktualizacji</string>
+    <string name="update_notify_button">Zainstaluj</string>
+    <string name="update_title">Dostępna jest aktualizacja</string>
 </resources>

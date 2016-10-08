@@ -35,7 +35,10 @@
     <string name="toast_error_connection_timed_out">Connection timed out</string>
 
     <!--About activity-->
-    <string name="about_version">Version:</string>
+    <string name="about_version">Current version:</string>
+    <string name="about_version_new">Checking for updates</string>
+    <string name="about_version_new_found">New version found: </string>
+    <string name="about_version_new_not_found">No updates found</string>
     <string name="about_developer">Developed by Krzysiek Zdulski</string>
     <string name="about_activity_name">About</string>
 
@@ -55,14 +58,15 @@
     <string name="download_completed_desc">Your download has finished, click to open the file</string>
 
     <string name="update_title">App update available</string>
-    <string name="update_disc">Version %s is now available to update!</string>
+    <string name="update_disc">Version %s is now available to update.\nDo you want to download and install a new version?</string>
     <string name="update_completed_title">Download finished</string>
     <string name="update_completed_disc">Click to install version %s</string>
     <string name="update_in_progress_title">Downloading update</string>
     <string name="update_in_progress_disc">Downloading version %s</string>
     <string name="update_notify_button">Install</string>
     <string name="update_error_wrong_version_title">Error</string>
-    <string name="update_error_wrong_version_disc">An error occurred when trying to update, please send this feedback to the developer</string>
+    <string name="update_error_wrong_version_disc_long">An error occurred when trying to update, please send this feedback to the developer</string>
+    <string name="update_error_wrong_version_disc">An error occurred when trying to update</string>
     <string name="update_error_notify_button">Send</string>
 
     <!--Menu strings-->
@@ -125,5 +129,5 @@
     <string name="api_url" translatable="false">https://api.dropbox.com/1/metadata/link</string>
     <string name="update_url" translatable="false">https://raw.githubusercontent.com/RouNNdeL/fizyka/master/app/</string>
     <string name="file_name" translatable="false">.fizyka.zip</string>
-    <string name="update_file_name">update.apk</string>
+    <string name="update_file_name" translatable="false">update.apk</string>
 </resources>

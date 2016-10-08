@@ -21,6 +21,7 @@ public class UpdateDownloader
     public final static int NOTIFICATION_UPDATE_DOWNLOADING = 3;
     public final static int NOTIFICATION_UPDATE_DOWNLOADED = 4;
     public final static int NOTIFICATION_UPDATE_ERROR = 5;
+    public final static int NOTIFICATION_UPDATE = 6;
 
     private long mDownloadReference;
     private String mNewVersion;
@@ -65,5 +66,13 @@ public class UpdateDownloader
     public long getDownloadReference()
     {
         return mDownloadReference;
+    }
+
+    public static boolean checkIfNew(String newVersion, String oldVersion)
+    {
+        String newVersionNum = Character.isLetter(newVersion.charAt(newVersion.length()-1))?newVersion.substring(0,newVersion.length()-1):newVersion;
+        String oldVersionNum = Character.isLetter(oldVersion.charAt(oldVersion.length()-1))?oldVersion.substring(0,oldVersion.length()-1):oldVersion;
+
+        return newVersionNum.compareTo(oldVersionNum)==0?newVersion.compareTo(oldVersion)>0:newVersionNum.compareTo(oldVersionNum)>0;
     }
 }

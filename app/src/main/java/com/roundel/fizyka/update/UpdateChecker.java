@@ -17,14 +17,12 @@ import java.net.URL;
  */
 public class UpdateChecker extends AsyncTask<String, Integer, String>
 {
-    private Context mContext;
     private UpdateCheckerListener mListener;
     private String mVersion;
     private final String TAG = "UpdateChecker";
 
-    public UpdateChecker(Context context, UpdateCheckerListener listener)
+    public UpdateChecker(UpdateCheckerListener listener)
     {
-        this.mContext = context;
         this.mListener = listener;
     }
 

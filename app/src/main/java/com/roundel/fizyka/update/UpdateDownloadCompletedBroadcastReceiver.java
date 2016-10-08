@@ -15,6 +15,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import com.roundel.fizyka.R;
+import com.roundel.fizyka.dropbox.DropboxDownloader;
 
 import java.io.File;
 import java.util.Objects;
@@ -48,7 +49,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADING);
 
-            if (!checkIfNew(info.versionName, mVersion))
+            if (UpdateDownloader.checkIfNew(info.versionName, mVersion))
             {
                 Intent installIntent = new Intent();
                 installIntent.setAction(Intent.ACTION_VIEW);
@@ -87,18 +88,12 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                         .setContentTitle(context.getString(R.string.update_error_wrong_version_title))
                         .setContentText(context.getString(R.string.update_error_wrong_version_disc))
                         .setColor(context.getColor(R.color.colorPrimary))
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(context.getString(R.string.update_error_wrong_version_disc_long)))
                         .addAction(R.drawable.ic_send_black_24dp, context.getString(R.string.update_error_notify_button), pendingIntent);
 
                 manager.notify(UpdateDownloader.NOTIFICATION_UPDATE_ERROR, builder.build());
             }
         }
-    }
-
-    public boolean checkIfNew(String newVersion, String oldVersion)
-    {
-        String newVersionNum = Character.isLetter(newVersion.charAt(newVersion.length()-1))?newVersion.substring(0,newVersion.length()-1):newVersion;
-        String oldVersionNum = Character.isLetter(oldVersion.charAt(oldVersion.length()-1))?oldVersion.substring(0,oldVersion.length()-1):oldVersion;
-
-        return newVersionNum.compareTo(oldVersionNum)==0?newVersion.compareTo(oldVersion)>0:newVersionNum.compareTo(oldVersionNum)>0;
     }
 }
