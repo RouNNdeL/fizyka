@@ -47,13 +47,11 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     {
         String urlString = params[0];
         String urlShared = params[1];
-        String urlPath = "/";
-        urlString += "?link="+urlShared+"&path="+urlPath;
+        urlString += "?link="+urlShared;
         try {
             URL url = new URL(urlString);
             JSONObject jsonData = new JSONObject();
             jsonData.put("link", urlShared);
-            jsonData.put("path", urlPath);
 
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -89,7 +87,7 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
         }
         catch (IOException|JSONException e)
         {
-            Log.e(TAG, Arrays.toString(e.getStackTrace()));
+            Log.e(TAG, e.getMessage());
         }
         return ERROR_CONNECTION_TIMED_OUT;
     }

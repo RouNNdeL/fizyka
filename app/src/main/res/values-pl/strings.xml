@@ -18,7 +18,7 @@
     <string name="settings_refresh_summary">Czas pomiędzy odświeżeniami</string>
     <string name="settings_refresh_title">Czas odświeżania</string>
     <string name="settings_url_summary">Link do folderu udostępnionego na Dropboxie</string>
-    <string name="settings_url_title">Link do Dropboxa</string>
+    <string name="settings_url_title">Link</string>
     <string name="refresh_time1">30 minut</string>
     <string name="refresh_time2">1 godzina</string>
     <string name="refresh_time3">2 godziny</string>
@@ -78,4 +78,5 @@
     <string name="update_in_progress_title">Pobieranie aktualizacji</string>
     <string name="update_notify_button">Zainstaluj</string>
     <string name="update_title">Dostępna jest aktualizacja</string>
+    <string name="snackbar_button_retry">Spróbuj ponownie</string>
 </resources>

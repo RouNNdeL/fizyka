@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.StrictMode;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.dropbox.DropboxDownloader;
 import com.roundel.fizyka.update.UpdateChecker;
@@ -48,36 +50,56 @@ public class AboutActivity extends AppCompatActivity
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/rounndel/fizyka")));
             }
         });
-        final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
+        Connectivity.hasAccess(new Connectivity.onHasAccessResponse()
         {
             @Override
-            public void onTaskStart()
+            public void onConnectionCheckStart()
             {
 
             }
 
             @Override
-            public void onTaskEnd(String version)
+            public void onConnectionAvailable(Long responseTime)
             {
-                try
+                final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
                 {
-                    PackageManager manager = getApplicationContext().getPackageManager();
-                    PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
-                    if (checkIfNew(version, info.versionName))
+                    @Override
+                    public void onTaskStart()
                     {
-                        newVersion.setText(getString(R.string.about_version_new_found) + " " + version);
-                        UpdateDownloader downloader = new UpdateDownloader(version);
-                        downloader.start(getApplicationContext());
-                        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-                        UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
-                        registerReceiver(receiver, filter);
-                    } else newVersion.setText(getString(R.string.about_version_new_not_found));
-                } catch (PackageManager.NameNotFoundException e)
-                {
-                }
+
+                    }
+
+                    @Override
+                    public void onTaskEnd(String version)
+                    {
+                        try
+                        {
+                            PackageManager manager = getApplicationContext().getPackageManager();
+                            PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
+                            if (checkIfNew(version, info.versionName))
+                            {
+                                newVersion.setText(getString(R.string.about_version_new_found) + " " + version);
+                                UpdateDownloader downloader = new UpdateDownloader(version);
+                                downloader.start(getApplicationContext());
+                                IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+                                UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
+                                registerReceiver(receiver, filter);
+                            }
+                            else newVersion.setText(getString(R.string.about_version_new_not_found));
+                        } catch (PackageManager.NameNotFoundException e)
+                        {
+                        }
+                    }
+                });
+                manager.execute();
+            }
+
+            @Override
+            public void onConnectionUnavailable()
+            {
+                newVersion.setText(getString(R.string.about_version_new_not_found));
             }
         });
-        manager.execute();
     }
 
 

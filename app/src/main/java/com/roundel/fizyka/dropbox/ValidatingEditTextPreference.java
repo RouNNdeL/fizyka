@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.support.design.widget.TextInputLayout;
 import android.widget.Toast;
 
+import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.activity.MainActivity;
 
@@ -37,6 +38,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
     private int mValidationType;
     private final int VALIDATION_PATH = 0;
     private final int VALIDATION_URL = 1;
+
     public ValidatingEditTextPreference(Context context) {
         super(context);
         //Auto-generated constructor stub
@@ -70,11 +72,6 @@ public class ValidatingEditTextPreference extends EditTextPreference
         }
     }
 
-    public void show()
-    {
-        showDialog(null);
-    }
-
     @Override
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder)
     {
@@ -88,6 +85,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
         super.showDialog(state);
         if (super.getDialog() instanceof AlertDialog) {
             final AlertDialog dialog = (AlertDialog) super.getDialog();
+            EditText editText = getEditText();
 
             Button buttonPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
             Button buttonNeutral = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
@@ -98,10 +96,10 @@ public class ValidatingEditTextPreference extends EditTextPreference
             buttonPositive.setTag(POSITIVE_BUTTON_TAG);
             buttonNeutral.setTag(NEUTRAL_BUTTON_TAG);
 
-            getEditText().setOnEditorActionListener(listener);
-            getEditText().addTextChangedListener(listener);
-
-
+            editText.setOnEditorActionListener(listener);
+            editText.addTextChangedListener(listener);
+            editText.setSingleLine(true);
+            if(mValidationType == VALIDATION_URL) editText.selectAll();
         }
     }
 
@@ -178,7 +176,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
             if(mValidationType == VALIDATION_URL)
             {
                 final TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
-                String text = getEditText().getText().toString();
+                final String text = getEditText().getText().toString();
                 Pattern p = Pattern.compile("^(http[s]*?:\\/\\/([\\w\\d]+\\.)?)*(www.)*dropbox\\.com\\/sh\\/");
                 Matcher m = p.matcher(text);
                 if(text.isEmpty())
@@ -193,48 +191,61 @@ public class ValidatingEditTextPreference extends EditTextPreference
                 }
                 else
                 {
-                    if (MainActivity.isOnline(getContext()))
+                    Connectivity.hasAccess(new Connectivity.onHasAccessResponse()
                     {
-                        DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
+                        @Override
+                        public void onConnectionCheckStart()
                         {
-                            @Override
-                            public void onTaskStart()
-                            {
-                                Toast.makeText(getContext(), getContext().getString(R.string.validation_url_refresh), Toast.LENGTH_SHORT).show();
-                            }
 
-                            @Override
-                            public void onTaskEnd(String result)
+                        }
+
+                        @Override
+                        public void onConnectionAvailable(Long responseTime)
+                        {
+                            DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
                             {
-                                Log.d(TAG, result);
-                                switch (result)
+                                @Override
+                                public void onTaskStart()
                                 {
-                                    case DropboxLinkValidator.NO_ERROR:
-                                        textInputLayout.setErrorEnabled(false);
-                                        Toast.makeText(getContext(), getContext().getString(R.string.validation_url_ok), Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case DropboxLinkValidator.ERROR_NOT_FOUND:
-                                        textInputLayout.setErrorEnabled(true);
-                                        textInputLayout.setError(getContext().getString(R.string.validation_url_not_found));
-                                        break;
-                                    case DropboxLinkValidator.ERROR_FORBIDDEN:
-                                        textInputLayout.setErrorEnabled(true);
-                                        textInputLayout.setError(getContext().getString(R.string.validation_url_no_access));
-                                        break;
-                                    case DropboxLinkValidator.ERROR_UNKNOWN:
-                                        textInputLayout.setErrorEnabled(true);
-                                        textInputLayout.setError(getContext().getString(R.string.validation_url_unknown));
-                                        break;
-                                    case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
-                                        Toast.makeText(getContext(), getContext().getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), getContext().getString(R.string.validation_url_refresh), Toast.LENGTH_SHORT).show();
                                 }
-                            }
-                        });
-                        validator.execute(getContext().getString(R.string.api_url), text);
-                    } else
-                    {
-                        Toast.makeText(getContext(), getContext().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
-                    }
+
+                                @Override
+                                public void onTaskEnd(String result)
+                                {
+                                    Log.d(TAG, result);
+                                    switch (result)
+                                    {
+                                        case DropboxLinkValidator.NO_ERROR:
+                                            textInputLayout.setErrorEnabled(false);
+                                            Toast.makeText(getContext(), getContext().getString(R.string.validation_url_ok), Toast.LENGTH_SHORT).show();
+                                            break;
+                                        case DropboxLinkValidator.ERROR_NOT_FOUND:
+                                            textInputLayout.setErrorEnabled(true);
+                                            textInputLayout.setError(getContext().getString(R.string.validation_url_not_found));
+                                            break;
+                                        case DropboxLinkValidator.ERROR_FORBIDDEN:
+                                            textInputLayout.setErrorEnabled(true);
+                                            textInputLayout.setError(getContext().getString(R.string.validation_url_no_access));
+                                            break;
+                                        case DropboxLinkValidator.ERROR_UNKNOWN:
+                                            textInputLayout.setErrorEnabled(true);
+                                            textInputLayout.setError(getContext().getString(R.string.validation_url_unknown));
+                                            break;
+                                        case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
+                                            Toast.makeText(getContext(), getContext().getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                            validator.execute(getContext().getString(R.string.api_url), text);
+                        }
+
+                        @Override
+                        public void onConnectionUnavailable()
+                        {
+                            Toast.makeText(getContext(), getContext().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         }

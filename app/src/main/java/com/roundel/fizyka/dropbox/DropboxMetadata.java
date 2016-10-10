@@ -130,7 +130,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
             }
             return newest;
         }
-        catch (ParseException e)
+        catch (ParseException|IndexOutOfBoundsException e)
         {
             Log.e("DATES", e.getMessage());
             return new Date();

@@ -2,11 +2,8 @@ package com.roundel.fizyka.activity;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,27 +11,26 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringDef;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.dropbox.DropboxDownloadCompletedBroadcastReceiver;
 import com.roundel.fizyka.dropbox.DropboxDownloader;
 import com.roundel.fizyka.dropbox.DropboxLinkValidator;
@@ -67,63 +63,83 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     public int UPDATE = 0;
     public static int SWITCH = 2;
 
+    private View rootView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyPreferenceFragment preferenceFragment = new MyPreferenceFragment();
         getFragmentManager().beginTransaction().replace(android.R.id.content, preferenceFragment).commit();
         loadData(this);
+        rootView = findViewById(android.R.id.content);
 
-        final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
+        Connectivity.hasAccess(new Connectivity.onHasAccessResponse()
         {
             @Override
-            public void onTaskStart()
+            public void onConnectionCheckStart()
             {
 
             }
 
             @Override
-            public void onTaskEnd(final String version)
+            public void onConnectionAvailable(Long responseTime)
             {
-                try
+                final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
                 {
-                    PackageManager manager = getApplicationContext().getPackageManager();
-                    PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
-                    if(UpdateDownloader.checkIfNew(version, info.versionName))
+                    @Override
+                    public void onTaskStart()
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setTitle(R.string.update_title)
-                                .setMessage(String.format(getString(R.string.update_disc), version))
-                                .setPositiveButton(R.string.download_notify_button, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i)
-                                    {
-                                        UpdateDownloader downloader = new UpdateDownloader(version);
-                                        downloader.start(getApplicationContext());
-                                        IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-                                        UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
-                                        getApplicationContext().registerReceiver(receiver, filter);
-                                    }
-                                })
-                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i)
-                                    {
-
-                                    }
-                                });
-                        builder.create().show();
 
                     }
-                }
-                catch (PackageManager.NameNotFoundException e)
-                {
-                }
+
+                    @Override
+                    public void onTaskEnd(final String version)
+                    {
+                        try
+                        {
+                            PackageManager manager = getApplicationContext().getPackageManager();
+                            PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
+                            if(version != null && UpdateDownloader.checkIfNew(version, info.versionName))
+                            {
+                                if(rootView != null)
+                                {
+                                    Snackbar snackbar = Snackbar
+                                            .make(rootView, getString(R.string.update_title), 7500)
+                                            .setAction(getString(R.string.download_notify_button), new View.OnClickListener()
+                                            {
+                                                @Override
+                                                public void onClick(View view)
+                                                {
+                                                    UpdateDownloader downloader = new UpdateDownloader(version);
+                                                    downloader.start(getApplicationContext());
+                                                    IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+                                                    UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
+                                                    getApplicationContext().registerReceiver(receiver, filter);
+                                                }
+                                            });
+
+                                    snackbar.show();
+                                }
+                                else
+                                {
+                                    Log.d("MainActivity", "Coordinator is null");
+                                }
+                            }
+                        }
+                        catch (PackageManager.NameNotFoundException e)
+                        {
+                        }
+                    }
+                });
+                manager.execute();
+            }
+
+            @Override
+            public void onConnectionUnavailable()
+            {
+
             }
         });
-        manager.execute();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,76 +162,8 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                 dialog.show(getFragmentManager(), "tag");
                 return true;
             case R.id.menu_refresh:
-                if(isOnline(this))
-                {
-                    final DropboxMetadata dropboxMetadata = new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
-                    {
-                        @Override
-                        public void onTaskStart()
-                        {
+                checkForUpdates(item);
 
-                        }
-
-                        @Override
-                        public void onTaskEnd(String result)
-                        {
-                            completeRefresh(item);
-                            try
-                            {
-                                Date date = mDropboxDateFormat.parse(result);
-                                mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
-                                startDownload(date.after(mRecentUpdate));
-                            }
-                            catch (ParseException e)
-                            {
-
-                            }
-                        }
-                    });
-                    DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
-                    {
-                        @Override
-                        public void onTaskStart()
-                        {
-                            refresh(item);
-                            Toast.makeText(MainActivity.this, getString(R.string.toast_refresh_start), Toast.LENGTH_SHORT).show();
-                        }
-
-                        @Override
-                        public void onTaskEnd(String result)
-                        {
-                            switch (result)
-                            {
-                                case DropboxLinkValidator.NO_ERROR:
-                                    dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
-                                    break;
-                                case DropboxLinkValidator.ERROR_FORBIDDEN:
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
-                                    completeRefresh(item);
-                                    break;
-                                case DropboxLinkValidator.ERROR_NOT_FOUND:
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
-                                    completeRefresh(item);
-                                    break;
-                                case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
-                                    completeRefresh(item);
-                                    break;
-                                default:
-                                    Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
-                                    completeRefresh(item);
-                                    break;
-                            }
-                        }
-                    });
-                    validator.execute(getString(R.string.api_url), mFolderUrl);
-                }
-                else
-                {
-                    refresh(item);
-                    completeRefresh(item);
-                    Toast.makeText(MainActivity.this, getResources().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
-                }
                 return true;
             case R.id.menu_clear_date:
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
@@ -252,6 +200,109 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         {
             Toast.makeText(MainActivity.this, getString(R.string.permission_denied_notification), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void checkForUpdates(final MenuItem refreshItem)
+    {
+        Connectivity.hasAccess(new Connectivity.onHasAccessResponse()
+        {
+            @Override
+            public void onConnectionCheckStart()
+            {
+                refresh(refreshItem);
+            }
+
+            @Override
+            public void onConnectionAvailable(Long responseTime)
+            {
+                final DropboxMetadata dropboxMetadata = new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
+                {
+                    @Override
+                    public void onTaskStart()
+                    {
+                        Toast.makeText(MainActivity.this, getString(R.string.toast_refresh_start), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onTaskEnd(String result)
+                    {
+                        completeRefresh(refreshItem);
+                        try
+                        {
+                            Date date = mDropboxDateFormat.parse(result);
+                            mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
+                            startDownload(date.after(mRecentUpdate));
+                        }
+                        catch (ParseException e)
+                        {
+
+                        }
+                    }
+                });
+                DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
+                {
+                    @Override
+                    public void onTaskStart()
+                    {
+
+                    }
+
+                    @Override
+                    public void onTaskEnd(String result)
+                    {
+                        switch (result)
+                        {
+                            case DropboxLinkValidator.NO_ERROR:
+                                dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
+                                break;
+                            case DropboxLinkValidator.ERROR_FORBIDDEN:
+                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
+                                completeRefresh(refreshItem);
+                                break;
+                            case DropboxLinkValidator.ERROR_NOT_FOUND:
+                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
+                                completeRefresh(refreshItem);
+                                break;
+                            case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
+                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
+                                completeRefresh(refreshItem);
+                                break;
+                            default:
+                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
+                                completeRefresh(refreshItem);
+                                break;
+                        }
+                    }
+                });
+                validator.execute(getString(R.string.api_url), mFolderUrl);
+            }
+
+            @Override
+            public void onConnectionUnavailable()
+            {
+                completeRefresh(refreshItem);
+                //Toast.makeText(MainActivity.this, getResources().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
+                if(rootView != null)
+                {
+                    Snackbar snackbar = Snackbar
+                            .make(rootView, getString(R.string.toast_no_network), Snackbar.LENGTH_LONG)
+                            .setAction(getString(R.string.snackbar_button_retry), new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View view)
+                                {
+                                    checkForUpdates(refreshItem);
+                                }
+                            });
+
+                    snackbar.show();
+                }
+                else
+                {
+                    Log.d("MainActivity", "Coordinator is null");
+                }
+            }
+        });
     }
 
     private void startDownload(Boolean newVersionAvailable)
@@ -296,13 +347,6 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             AlertDialog dialog = builder.create();
             dialog.show();
         }
-    }
-
-    public static boolean isOnline(Context context) {
-        ConnectivityManager cm =
-                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return (netInfo != null) && netInfo.isConnectedOrConnecting();
     }
 
     private void refresh(MenuItem refreshItem) {
