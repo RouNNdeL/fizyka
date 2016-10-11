@@ -1,8 +1,10 @@
 package com.roundel.fizyka.activity;
 
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -81,9 +83,12 @@ public class AboutActivity extends AppCompatActivity
                                 newVersion.setText(getString(R.string.about_version_new_found) + " " + version);
                                 UpdateDownloader downloader = new UpdateDownloader(version);
                                 downloader.start(getApplicationContext());
-                                IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-                                UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
-                                registerReceiver(receiver, filter);
+
+                                SharedPreferences.Editor downloadPrefsEditor = getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();
+
+                                downloadPrefsEditor.putLong(UpdateDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
+                                downloadPrefsEditor.putString(UpdateDownloader.DOWNLOAD_VERSION, version);
+                                downloadPrefsEditor.apply();
                             }
                             else newVersion.setText(getString(R.string.about_version_new_not_found));
                         } catch (PackageManager.NameNotFoundException e)

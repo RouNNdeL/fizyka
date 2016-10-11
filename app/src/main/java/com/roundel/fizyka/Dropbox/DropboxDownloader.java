@@ -15,6 +15,7 @@ import java.io.File;
 public class DropboxDownloader
 {
     public final static String ACTION_DOWNLOAD = "com.roundel.fizyka.ACTION_DOWNLOAD";
+    public final static String DOWNLOAD_REFERENCE = "dropbox_download_reference";
 
     private String mDownloadURL;
     private String mPath;

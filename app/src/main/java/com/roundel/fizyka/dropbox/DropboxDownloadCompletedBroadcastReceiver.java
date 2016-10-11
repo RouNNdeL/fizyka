@@ -26,19 +26,17 @@ import java.util.Objects;
 public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
 {
     public static int NOTIFICATION_ID = 2;
-    private long mDownloadReference;
-
-    public DropboxDownloadCompletedBroadcastReceiver(Long downloadReference)
-    {
-        this.mDownloadReference = downloadReference;
-    }
 
     @Override
     public void onReceive(Context context, Intent intent)
     {
         String action = intent.getAction();
         Long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-        if(Objects.equals(action, DownloadManager.ACTION_DOWNLOAD_COMPLETE) && Objects.equals(reference, mDownloadReference))
+
+        SharedPreferences downloadPrefs = context.getSharedPreferences("download_references", Context.MODE_PRIVATE);
+        long requiredReference = downloadPrefs.getLong(DropboxDownloader.DOWNLOAD_REFERENCE, 0);
+
+        if(Objects.equals(action, DownloadManager.ACTION_DOWNLOAD_COMPLETE) && reference.equals(requiredReference))
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String folderPath = prefs.getString("download_path", "/fizyka/");

@@ -30,7 +30,16 @@
             android:name=".dropbox.NotificationIntentService"
             android:enabled="true"
             android:exported="false"/>
-
+        <receiver android:name=".dropbox.DropboxDownloadCompletedBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".update.UpdateDownloadCompletedBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+            </intent-filter>
+        </receiver>
         <receiver android:name=".dropbox.NotificationEventReceiver"/>
         <receiver android:name=".dropbox.DownloadButtonPressedBroadcastReceiver">
             <intent-filter>

@@ -18,6 +18,8 @@ import java.io.File;
 public class UpdateDownloader
 {
     public final static String ACTION_UPDATE = "com.roundel.fizyka.ACTION_UPDATE";
+    public final static String DOWNLOAD_REFERENCE = "update_reference";
+    public final static String DOWNLOAD_VERSION = "update_version";
     public final static int NOTIFICATION_UPDATE_DOWNLOADING = 3;
     public final static int NOTIFICATION_UPDATE_DOWNLOADED = 4;
     public final static int NOTIFICATION_UPDATE_ERROR = 5;

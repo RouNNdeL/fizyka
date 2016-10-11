@@ -64,7 +64,6 @@
     <string name="validation_url_refresh">Trwa sprawdzanie linku…</string>
     <string name="validation_url_unknown">Nieznany błąd</string>
     <string name="validation_url_empty">Link nie może być pusty</string>
-    <string name="update_completed_disc">Kliknij aby zainsatlowć wersje %s</string>
     <string name="update_completed_title">Pobieranie zakończone</string>
     <string name="update_disc">Wersja %s jest dostępna do pobrania</string>
     <string name="update_error_notify_button">Wyślij</string>
@@ -79,4 +78,6 @@
     <string name="update_notify_button">Zainstaluj</string>
     <string name="update_title">Dostępna jest aktualizacja</string>
     <string name="snackbar_button_retry">Spróbuj ponownie</string>
+    <string name="update_completed_disc_expanded">Kliknij aby zainsatlowć wersje %s</string>
+    <string name="update_completed_disc">Rozwiń powiadomienie aby zainsatlować wersję %s</string>
 </resources>

@@ -39,9 +39,10 @@ public class DownloadButtonPressedBroadcastReceiver extends WakefulBroadcastRece
             final DropboxDownloader downloader = new DropboxDownloader(folderUrl.replace("?dl=0", "?dl=1"), folderPath);
             downloader.start(context);
 
-            IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-            DropboxDownloadCompletedBroadcastReceiver receiver = new DropboxDownloadCompletedBroadcastReceiver(downloader.getDownloadReference());
-            context.registerReceiver(receiver, filter);
+            SharedPreferences.Editor downloadPrefsEditor = context.getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();
+
+            downloadPrefsEditor.putLong(DropboxDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
+            downloadPrefsEditor.apply();
         }
     }
 }

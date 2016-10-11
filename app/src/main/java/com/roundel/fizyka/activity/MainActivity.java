@@ -112,9 +112,11 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                                                 {
                                                     UpdateDownloader downloader = new UpdateDownloader(version);
                                                     downloader.start(getApplicationContext());
-                                                    IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-                                                    UpdateDownloadCompletedBroadcastReceiver receiver = new UpdateDownloadCompletedBroadcastReceiver(downloader.getDownloadReference(), version);
-                                                    getApplicationContext().registerReceiver(receiver, filter);
+
+                                                    SharedPreferences.Editor downloadPrefsEditor = getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();
+                                                    downloadPrefsEditor.putLong(UpdateDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
+                                                    downloadPrefsEditor.putString(UpdateDownloader.DOWNLOAD_VERSION, version);
+                                                    downloadPrefsEditor.apply();
                                                 }
                                             });
 
@@ -330,9 +332,13 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                 public void onClick(DialogInterface p1, int p2)
                 {
                     downloader.start(getApplicationContext());
-                    IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-                    DropboxDownloadCompletedBroadcastReceiver receiver = new DropboxDownloadCompletedBroadcastReceiver(downloader.getDownloadReference());
-                    registerReceiver(receiver, filter);
+                    /*IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+                    DropboxDownloadCompletedBroadcastReceiver receiver = new DropboxDownloadCompletedBroadcastReceiver();
+                    registerReceiver(receiver, filter);*/
+                    SharedPreferences.Editor downloadPrefsEditor = getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();
+
+                    downloadPrefsEditor.putLong(DropboxDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
+                    downloadPrefsEditor.apply();
                     saveData(mDropboxDateFormat.format(mNewRecentDate));
                 }
             });

@@ -61,7 +61,8 @@
     <string name="update_title">App update available</string>
     <string name="update_disc">Version %s is now available to update.\nDo you want to download and install a new version?</string>
     <string name="update_completed_title">Download finished</string>
-    <string name="update_completed_disc">Click to install version %s</string>
+    <string name="update_completed_disc">Expand notification to install version %s</string>
+    <string name="update_completed_disc_expanded">Click to install version %s</string>
     <string name="update_in_progress_title">Downloading update</string>
     <string name="update_in_progress_disc">Downloading version %s</string>
     <string name="update_notify_button">Install</string>

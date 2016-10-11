@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -25,21 +26,16 @@ import java.util.Objects;
  */
 public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastReceiver
 {
-    private long mReference;
-    private String mVersion;
-
-    public UpdateDownloadCompletedBroadcastReceiver(Long reference, String version)
-    {
-        this.mReference = reference;
-        this.mVersion = version;
-    }
-
     @Override
     public void onReceive(Context context, Intent intent)
     {
         String action = intent.getAction();
         Long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-        if(reference == mReference && Objects.equals(action, DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+        SharedPreferences downloadPrefs = context.getSharedPreferences("download_references", Context.MODE_PRIVATE);
+        long requiredReference = downloadPrefs.getLong(UpdateDownloader.DOWNLOAD_REFERENCE, 0);
+        String version = downloadPrefs.getString(UpdateDownloader.DOWNLOAD_VERSION, "0");
+
+        if(Objects.equals(action, DownloadManager.ACTION_DOWNLOAD_COMPLETE) && Objects.equals(reference, requiredReference))
         {
             File file = new File(context.getExternalFilesDir(null)+"/"+context.getString(R.string.update_file_name));
             PackageManager packageManager = context.getPackageManager();
@@ -49,7 +45,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADING);
 
-            if (Objects.equals(info.versionName, mVersion))
+            if (Objects.equals(info.versionName, version))
             {
                 Intent installIntent = new Intent();
                 installIntent.setAction(Intent.ACTION_VIEW);
@@ -60,9 +56,11 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
                 builder.setSmallIcon(R.drawable.ic_file_download_white_24dp)
                         .setContentTitle(context.getString(R.string.update_completed_title))
-                        .setContentText(String.format(context.getString(R.string.update_completed_disc), mVersion))
+                        .setContentText(String.format(context.getString(R.string.update_completed_disc), version))
                         .setColor(context.getColor(R.color.colorPrimary))
-                        .addAction(R.drawable.ic_system_update_black_24dp, context.getString(R.string.update_notify_button), pendingIntent);
+                        .addAction(R.drawable.ic_system_update_black_24dp, context.getString(R.string.update_notify_button), pendingIntent)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(String.format(context.getString(R.string.update_completed_disc_expanded), version)));
 
                 manager.notify(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADED, builder.build());
             }
@@ -75,7 +73,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                 }
                 catch (PackageManager.NameNotFoundException e)
                 {}
-                String body = String.format("Expected version: %s\nVersion found: %s\nVersion installed: %s", mVersion, info.versionName, versionInstalled);
+                String body = String.format("Expected version: %s\nVersion found: %s\nVersion installed: %s", version, info.versionName, versionInstalled);
                 Intent sendIntent = new Intent();
                 sendIntent.setData(Uri.parse("mailto:rounndel@gmail.com"));
                 sendIntent.setAction(Intent.ACTION_SENDTO);
