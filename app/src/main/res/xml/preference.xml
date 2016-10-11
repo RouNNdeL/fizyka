@@ -8,6 +8,10 @@
             android:title="@string/settings_notification_title"
             android:summary="@string/settings_notification_summary"
             android:defaultValue="false"/>
+        <com.roundel.fizyka.TimePreference
+            android:key="time"
+            android:title="@string/settings_time_reference_title"
+            android:summary="@string/settings_time_reference_summary"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/category_network">
@@ -18,7 +22,7 @@
             android:defaultValue="720"
             android:entries="@array/refresh_time_name"
             android:entryValues="@array/refresh_time_value"/>
-        <com.roundel.fizyka.dropbox.ValidatingEditTextPreference
+        <com.roundel.fizyka.ValidatingEditTextPreference
             android:key="download_url"
             android:title="@string/settings_url_title"
             android:summary="@string/settings_url_summary"
@@ -28,7 +32,7 @@
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/category_storage">
-        <com.roundel.fizyka.dropbox.ValidatingEditTextPreference
+        <com.roundel.fizyka.ValidatingEditTextPreference
             android:key="download_path"
             android:title="@string/settings_path_title"
             android:summary="@string/settings_path_summary"

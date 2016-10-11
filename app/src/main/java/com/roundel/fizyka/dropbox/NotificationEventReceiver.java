@@ -4,6 +4,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
@@ -15,13 +17,16 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver
 
     private static final String ACTION_START_NOTIFICATION_SERVICE = "ACTION_START_NOTIFICATION_SERVICE";
     private static final String ACTION_DELETE_NOTIFICATION = "ACTION_DELETE_NOTIFICATION";
-    //private static final long NOTIFICATIONS_INTERVAL_IN_MINUTES = 15;
 
-    public static void setupAlarm(Context context, Long interval) {
+    public static void setupAlarm(Context context, Long interval)
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        long referenceTime = preferences.getLong("time", 0);
+
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent alarmIntent = getStartPendingIntent(context);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,
-                getTriggerAt(new Date()),
+                referenceTime,
                 interval * 60000,
                 alarmIntent);
     }
@@ -33,21 +38,11 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver
         if (ACTION_START_NOTIFICATION_SERVICE.equals(action)) {
             Log.i(getClass().getSimpleName(), "onReceive from alarm, starting notification service");
             serviceIntent = NotificationIntentService.createIntentStartNotificationService(context);
-        } else if (ACTION_DELETE_NOTIFICATION.equals(action)) {
-            Log.i(getClass().getSimpleName(), "onReceive delete notification action, starting notification service to handle delete");
-            serviceIntent = NotificationIntentService.createIntentDeleteNotification(context);
         }
 
         if (serviceIntent != null) {
             startWakefulService(context, serviceIntent);
         }
-    }
-
-    private static long getTriggerAt(Date now) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(now);
-        //calendar.add(Calendar.HOUR, NOTIFICATIONS_INTERVAL_IN_HOURS);
-        return calendar.getTimeInMillis();
     }
 
     private static PendingIntent getStartPendingIntent(Context context) {

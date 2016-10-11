@@ -80,4 +80,6 @@
     <string name="snackbar_button_retry">Spróbuj ponownie</string>
     <string name="update_completed_disc_expanded">Kliknij aby zainsatlowć wersje %s</string>
     <string name="update_completed_disc">Rozwiń powiadomienie aby zainsatlować wersję %s</string>
+    <string name="settings_time_reference_summary">Czas, zgodnie z którym pojawiają się powiadomienia</string>
+    <string name="settings_time_reference_title">Czas powiadomienia</string>
 </resources>

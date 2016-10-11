@@ -88,6 +88,8 @@
     <string name="settings_url_summary">URL to the shared Dropbox folder</string>
     <string name="settings_extract_title">Extract</string>
     <string name="settings_extract_summary">Extract files after download</string>
+    <string name="settings_time_reference_title">Notification time</string>
+    <string name="settings_time_reference_summary">Time according to which notification appear</string>
 
 
     <string name="category_notification">Notification</string>

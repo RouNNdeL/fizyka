@@ -1,4 +1,4 @@
-package com.roundel.fizyka.dropbox;
+package com.roundel.fizyka;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,9 +19,7 @@ import android.widget.TextView;
 import android.support.design.widget.TextInputLayout;
 import android.widget.Toast;
 
-import com.roundel.fizyka.Connectivity;
-import com.roundel.fizyka.R;
-import com.roundel.fizyka.activity.MainActivity;
+import com.roundel.fizyka.dropbox.DropboxLinkValidator;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -444,15 +444,17 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
 
             switch (key)
             {
+                case "time":
                 case "refresh_time":
                     if(prefs.getBoolean("notification", false))
                     {
-                        NotificationEventReceiver.setupAlarm(getContext(), Long.parseLong(prefs.getString(key, "240")));
+                        NotificationEventReceiver.setupAlarm(getContext(), Long.parseLong(prefs.getString("refresh_time", "240")));
                     }
                     break;
                 case "notification":
                     if(prefs.getBoolean("notification", false))
                     {
+                        findPreference("time").setEnabled(true);
                         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                         {
                             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SWITCH);
@@ -460,6 +462,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                             preference.setChecked(false);
                         }
                     }
+                    else findPreference("time").setEnabled(false);
             }
         }
         @Override
@@ -482,6 +485,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
             if(prefs.getBoolean("notification", false))
             {
+                findPreference("time").setEnabled(true);
                 if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                 {
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SWITCH);
