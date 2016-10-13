@@ -493,6 +493,10 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                     preference.setChecked(false);
                 }
             }
+            else
+            {
+                findPreference("time").setEnabled(false);
+            }
         }
     }
 

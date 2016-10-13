@@ -8,6 +8,7 @@ import android.os.Environment;
 import com.roundel.fizyka.R;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-09-24.
@@ -23,6 +24,18 @@ public class DropboxDownloader
 
     public DropboxDownloader(String url, String path)
     {
+
+        url = url.replace(" ", "");
+        if(!url.contains("dl=1"))
+        {
+            if(!url.contains("dl=0")) url = url.replace("dl=0", "dl=1");
+            else if(url.contains("?"))
+            {
+                if(Objects.equals(url.charAt(url.length()-1), '?')) url+="dl=1";
+                else url+="&dl=1";
+            }
+            else url+="?dl=1";
+        }
         mDownloadURL = url;
         mPath = path;
     }

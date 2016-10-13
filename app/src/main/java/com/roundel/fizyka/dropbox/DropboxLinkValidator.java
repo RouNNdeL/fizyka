@@ -54,17 +54,6 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     {
         String urlString = params[0];
         String urlShared = params[1];
-        urlShared = urlShared.replace(" ", "");
-        if(!urlShared.contains("dl=1"))
-        {
-            if(!urlShared.contains("dl=0")) urlShared = urlShared.replace("dl=0", "dl=1");
-            else if(urlShared.contains("?"))
-            {
-                if(Objects.equals(urlShared.charAt(urlShared.length()-1), '?')) urlShared+="dl=1";
-                else urlShared+="&dl=1";
-            }
-            else urlShared+="?dl=1";
-        }
         try {
             urlString += "?link="+ URLEncoder.encode(urlShared, "UTF-8");
             URL url = new URL(urlString);

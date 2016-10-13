@@ -15,6 +15,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -85,20 +86,8 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
     protected String singlePOST(String urlString, String urlShared, String urlPath)
     {
         String resultToDisplay = "";
-        urlShared = urlShared.replace(" ", "");
-        if(!urlShared.contains("dl=1"))
-        {
-            if(!urlShared.contains("dl=0")) urlShared = urlShared.replace("dl=0", "dl=1");
-            else if(urlShared.contains("?"))
-            {
-                if(Objects.equals(urlShared.charAt(urlShared.length()-1), '?')) urlShared+="dl=1";
-                else urlShared+="&dl=1";
-            }
-            else urlShared+="?dl=1";
-        }
-        urlString += "?link="+urlShared;
-        urlString += "?link="+urlShared+"&path="+urlPath;
         try {
+            urlString += "?link="+ URLEncoder.encode(urlShared, "UTF-8")+"&path="+urlPath;
             URL url = new URL(urlString);
             JSONObject jsonData = new JSONObject();
             jsonData.put("link", urlShared);
