@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             @Override
             public void onConnectionAvailable(Long responseTime)
             {
-                final DropboxMetadata dropboxMetadata = new DropboxMetadata(mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
+                final DropboxMetadata dropboxMetadata = new DropboxMetadata(mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
                 {
                     @Override
                     public void onTaskStart()
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                         }
                     }
                 });
-                DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
+                DropboxLinkValidator validator = new DropboxLinkValidator(getApplicationContext(), new DropboxLinkValidator.DropboxLinkValidatorListener()
                 {
                     @Override
                     public void onTaskStart()

@@ -36,7 +36,7 @@ public class DownloadButtonPressedBroadcastReceiver extends WakefulBroadcastRece
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancel(1);
 
-            final DropboxDownloader downloader = new DropboxDownloader(folderUrl.replace("?dl=0", "?dl=1"), folderPath);
+            final DropboxDownloader downloader = new DropboxDownloader(folderUrl, folderPath);
             downloader.start(context);
 
             SharedPreferences.Editor downloadPrefsEditor = context.getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();

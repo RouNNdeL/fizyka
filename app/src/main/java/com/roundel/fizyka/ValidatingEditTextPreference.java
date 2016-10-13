@@ -200,7 +200,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
                         @Override
                         public void onConnectionAvailable(Long responseTime)
                         {
-                            DropboxLinkValidator validator = new DropboxLinkValidator(new DropboxLinkValidator.DropboxLinkValidatorListener()
+                            DropboxLinkValidator validator = new DropboxLinkValidator(getContext(), new DropboxLinkValidator.DropboxLinkValidatorListener()
                             {
                                 @Override
                                 public void onTaskStart()

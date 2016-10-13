@@ -86,7 +86,7 @@ public class NotificationIntentService extends IntentService
             @Override
             public void onConnectionAvailable(Long responseTime)
             {
-                DropboxMetadata dropboxMetadata= new DropboxMetadata(MainActivity.mDropboxDateFormat, new DropboxMetadata.DropboxMetadataListener()
+                DropboxMetadata dropboxMetadata= new DropboxMetadata(MainActivity.mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
                 {
                     @Override
                     public void onTaskEnd(String result)

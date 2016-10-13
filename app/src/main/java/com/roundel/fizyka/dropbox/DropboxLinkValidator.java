@@ -1,7 +1,10 @@
 package com.roundel.fizyka.dropbox;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.roundel.fizyka.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +15,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-10-05.
@@ -29,10 +34,12 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     private final String TAG = "DropboxLinkValidator";
 
     private DropboxLinkValidatorListener mListener;
+    private Context mContext;
 
-    public DropboxLinkValidator(DropboxLinkValidatorListener listener)
+    public DropboxLinkValidator(Context context, DropboxLinkValidatorListener listener)
     {
         this.mListener = listener;
+        this.mContext = context;
     }
 
 
@@ -47,8 +54,19 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     {
         String urlString = params[0];
         String urlShared = params[1];
-        urlString += "?link="+urlShared;
+        urlShared = urlShared.replace(" ", "");
+        if(!urlShared.contains("dl=1"))
+        {
+            if(!urlShared.contains("dl=0")) urlShared = urlShared.replace("dl=0", "dl=1");
+            else if(urlShared.contains("?"))
+            {
+                if(Objects.equals(urlShared.charAt(urlShared.length()-1), '?')) urlShared+="dl=1";
+                else urlShared+="&dl=1";
+            }
+            else urlShared+="?dl=1";
+        }
         try {
+            urlString += "?link="+ URLEncoder.encode(urlShared, "UTF-8");
             URL url = new URL(urlString);
             JSONObject jsonData = new JSONObject();
             jsonData.put("link", urlShared);
@@ -57,7 +75,7 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
 
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type","application/json");
-            urlConnection.setRequestProperty("Authorization", "Bearer CagAdvw3mIMAAAAAAAAEz3dumqld_1pSkukJNYeTCabJjq_WXmLpdtAFT_RlJP0t");
+            urlConnection.setRequestProperty("Authorization", "Bearer "+mContext.getString(R.string.api_token));
 
             // Send POST data.
             DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
@@ -66,6 +84,7 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
             printout.close();
 
             int HttpResponseCode = urlConnection.getResponseCode();
+            Log.d("DropboxMetadata", urlConnection.getResponseMessage());
 
             if(HttpResponseCode == HttpURLConnection.HTTP_OK)
             {

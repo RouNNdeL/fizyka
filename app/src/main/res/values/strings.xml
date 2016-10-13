@@ -31,7 +31,7 @@
     <string name="toast_refresh_start">Update has started, this may take while</string>
     <string name="toast_error_forbidden">You don\'t have permission to access that Dropbox folder</string>
     <string name="toast_error_not_found">The Dropbox folder was not found</string>
-    <string name="toast_error_unknown">An unknown error has occurred with the Dropbox link</string>
+    <string name="toast_error_unknown">An unknown error has occurred</string>
     <string name="toast_error_connection_timed_out">Connection timed out</string>
     <string name="snackbar_button_retry">Retry</string>
 
@@ -130,6 +130,7 @@
     </string-array>
 
     <!--DO NOT EDIT-->
+    <string name="api_token" translatable="false">CUvm2qbKkcAAAAAAAAAACV_P-oQVpznwysO21GMvVawKA4r6YxB1jjvr3eULVZpb</string>
     <string name="api_url" translatable="false">https://api.dropbox.com/1/metadata/link</string>
     <string name="update_url" translatable="false">https://raw.githubusercontent.com/RouNNdeL/fizyka/master/app/</string>
     <string name="file_name" translatable="false">.fizyka.zip</string>

@@ -1,7 +1,10 @@
 package com.roundel.fizyka.dropbox;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.roundel.fizyka.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,6 +20,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-09-24.
@@ -27,13 +31,15 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
 
     public List<String> datesList = new ArrayList<String>();
 
-    public DropboxMetadataListener listener = null;
+    private DropboxMetadataListener listener = null;
     private DateFormat dateFormat;
+    private Context context;
 
-    public DropboxMetadata(DateFormat dateFormat, DropboxMetadataListener listener)
+    public DropboxMetadata(DateFormat dateFormat, Context context, DropboxMetadataListener listener)
     {
         this.dateFormat = dateFormat;
         this.listener=listener;
+        this.context = context;
     }
 
     @Override
@@ -79,6 +85,18 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
     protected String singlePOST(String urlString, String urlShared, String urlPath)
     {
         String resultToDisplay = "";
+        urlShared = urlShared.replace(" ", "");
+        if(!urlShared.contains("dl=1"))
+        {
+            if(!urlShared.contains("dl=0")) urlShared = urlShared.replace("dl=0", "dl=1");
+            else if(urlShared.contains("?"))
+            {
+                if(Objects.equals(urlShared.charAt(urlShared.length()-1), '?')) urlShared+="dl=1";
+                else urlShared+="&dl=1";
+            }
+            else urlShared+="?dl=1";
+        }
+        urlString += "?link="+urlShared;
         urlString += "?link="+urlShared+"&path="+urlPath;
         try {
             URL url = new URL(urlString);
@@ -90,7 +108,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
 
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type","application/json");
-            urlConnection.setRequestProperty("Authorization", "Bearer CagAdvw3mIMAAAAAAAAEz3dumqld_1pSkukJNYeTCabJjq_WXmLpdtAFT_RlJP0t");
+            urlConnection.setRequestProperty("Authorization", "Bearer "+context.getString(R.string.api_token));
 
             // Send POST data.
             DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
