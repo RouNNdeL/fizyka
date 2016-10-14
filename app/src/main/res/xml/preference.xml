@@ -44,5 +44,10 @@
             android:title="@string/settings_extract_title"
             android:summary="@string/settings_extract_summary"
             android:defaultValue="true"/>
+        <!--<SwitchPreference
+            android:key="original_dates"
+            android:title="Dropbox dates"
+            android:summary="Extracted files will have the same modification date as it appears on Dropbox"
+            android:defaultValue="true"/>-->
     </PreferenceCategory>
 </PreferenceScreen>

@@ -23,6 +23,8 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         long referenceTime = preferences.getLong("time", 0);
 
+        Log.d("SetNotification", Long.toString(referenceTime));
+
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent alarmIntent = getStartPendingIntent(context);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,

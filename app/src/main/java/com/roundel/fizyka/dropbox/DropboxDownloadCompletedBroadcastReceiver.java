@@ -17,7 +17,11 @@ import com.roundel.fizyka.R;
 import com.roundel.fizyka.UnzipUtility;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -73,6 +77,25 @@ public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastR
                     Log.e("ZIP", e.getMessage());
                 }
             }
+            /*if(prefs.getBoolean("dates", true))
+            {
+                try
+                {
+                    ObjectInputStream ois = new ObjectInputStream(new FileInputStream(context.getFilesDir() + "/dropbox_entities.dat"));
+                    List<DropboxEntity> entities = (List<DropboxEntity>) ois.readObject();
+
+                    for (DropboxEntity entity : entities)
+                    {
+                        Long time = (entity.getDate().getTime()/1000)*1000;
+                        File fileToEdit = new File(Environment.getExternalStorageDirectory() + folderPath + entity.getPath());
+                        fileToEdit.setLastModified(time);
+                        Log.d("TimeInMIllis", Long.toString(time));
+                    }
+                } catch (IOException | ClassNotFoundException e)
+                {
+                    e.printStackTrace();
+                }
+            }*/
         }
     }
 }

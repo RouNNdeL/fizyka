@@ -26,11 +26,11 @@ import java.util.Objects;
 /**
  * Created by RouNdeL on 2016-09-24.
  */
-public class DropboxMetadata extends AsyncTask <String, Integer, String>
+public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEntity>>
 {
-    private final String TAG = "TASK";
+    private final String TAG = "DropboxTask";
 
-    public List<String> datesList = new ArrayList<String>();
+    public List<DropboxEntity> entities = new ArrayList<DropboxEntity>();
 
     private DropboxMetadataListener listener = null;
     private DateFormat dateFormat;
@@ -44,14 +44,14 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
     }
 
     @Override
-    protected String doInBackground(String... params)
+    protected List<DropboxEntity> doInBackground(String... params)
     {
         checkSubdirectories(params[0], params[1], params[2]);
-        return dateFormat.format(newestDate(datesList));
+        return entities;
     }
 
     @Override
-    protected void onPostExecute(String s)
+    protected void onPostExecute(List<DropboxEntity> s)
     {
         listener.onTaskEnd(s);
     }
@@ -67,7 +67,10 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
         //Log.d(TAG, response);
         try{
             JSONObject jsonObject = new JSONObject(response);
-            datesList.add(jsonObject.getString("modified"));
+            Boolean isDir = jsonObject.getBoolean("is_dir");
+            String mimeType = null;
+            if(jsonObject.has("mime_type")) mimeType = jsonObject.getString("mime_type");
+            entities.add(new DropboxEntity(isDir?DropboxEntity.TYPE_FOLDER:DropboxEntity.TYPE_FILE, path, mimeType, dateFormat.parse(jsonObject.getString("modified"))));
             if(jsonObject.has("contents"))
             {
                 JSONArray arr = jsonObject.getJSONArray("contents");
@@ -78,7 +81,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
             }
 
         }
-        catch (JSONException e)
+        catch (JSONException | ParseException e)
         {
             Log.e(TAG, e.getMessage());
         }
@@ -111,6 +114,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
             {
                 BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 resultToDisplay = br.readLine();
+                //Log.d(TAG, resultToDisplay);
             }
 
         } catch (Exception e) {
@@ -122,49 +126,9 @@ public class DropboxMetadata extends AsyncTask <String, Integer, String>
         return resultToDisplay;
     }
 
-    private Date newestDate(List<String> array)
-    {
-        try{
-            Date newest = dateFormat.parse(array.get(0));
-            Date current;
-            for (int i = 0; i < array.size(); i++)
-            {
-                current = dateFormat.parse(array.get(i));
-                if(newest.before(current))
-                {
-                    newest = current;
-                }
-            }
-            return newest;
-        }
-        catch (ParseException|IndexOutOfBoundsException e)
-        {
-            Log.e("DATES", e.getMessage());
-            return new Date();
-        }
-
-    }
-
     public interface DropboxMetadataListener
     {
         void onTaskStart();
-        void onTaskEnd(String result);
+        void onTaskEnd(List<DropboxEntity> entities);
     }
-
-    //Might use that later
-    /*protected boolean checkConnection()
-    {
-       try
-       {
-           URL url = new URL("http://www.gstatic.com/generate_204");
-           HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-           connection.setRequestMethod("GET");
-           return connection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT;
-       }
-       catch (IOException e)
-       {
-           Log.e(TAG, e.getMessage());
-       }
-        return false;
-    }*/
 }

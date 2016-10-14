@@ -3,15 +3,14 @@ package com.roundel.fizyka.activity;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
@@ -31,22 +30,30 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.roundel.fizyka.Connectivity;
-import com.roundel.fizyka.dropbox.DropboxDownloadCompletedBroadcastReceiver;
 import com.roundel.fizyka.dropbox.DropboxDownloader;
+import com.roundel.fizyka.dropbox.DropboxEntity;
 import com.roundel.fizyka.dropbox.DropboxLinkValidator;
 import com.roundel.fizyka.dropbox.DropboxMetadata;
 import com.roundel.fizyka.dropbox.NotificationEventReceiver;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.RestartDialogFragment;
 import com.roundel.fizyka.update.UpdateChecker;
-import com.roundel.fizyka.update.UpdateDownloadCompletedBroadcastReceiver;
 import com.roundel.fizyka.update.UpdateDownloader;
 
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatPreferenceActivity implements ActivityCompat.OnRequestPermissionsResultCallback
 {
@@ -62,6 +69,9 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     public int NO_UPDATE = 1;
     public int UPDATE = 0;
     public static int SWITCH = 2;
+
+    private List<DropboxEntity> entitiesToSave;
+    private List<DropboxEntity> deltaEntities;
 
     private View rootView;
 
@@ -184,11 +194,11 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     {
         if(requestCode == NO_UPDATE && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
-            startDownload(false);
+            showDownloadDialog(false);
         }
         else if(requestCode == UPDATE && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
-            startDownload(true);
+            showDownloadDialog(true);
         }
         else if(requestCode == SWITCH  && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
@@ -215,7 +225,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             }
 
             @Override
-            public void onConnectionAvailable(Long responseTime)
+            public void onConnectionAvailable(final Long responseTime)
             {
                 final DropboxMetadata dropboxMetadata = new DropboxMetadata(mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
                 {
@@ -226,18 +236,56 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                     }
 
                     @Override
-                    public void onTaskEnd(String result)
+                    public void onTaskEnd(List<DropboxEntity> result)
                     {
                         completeRefresh(refreshItem);
+                        //Log.d("DropboxEntity", DropboxEntity.listToString(result));
                         try
                         {
-                            Date date = mDropboxDateFormat.parse(result);
-                            mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
-                            startDownload(date.after(mRecentUpdate));
-                        }
-                        catch (ParseException e)
-                        {
+                            File file = new File(getFilesDir()+"/dropbox_entities.dat");
+                            if(! file.exists()) file.createNewFile();
 
+                            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir()+"/dropbox_entities.dat"));
+                            List<DropboxEntity> oldEntities = (List<DropboxEntity>) ois.readObject();
+
+                            List<DropboxEntity> newEntities = DropboxEntity.getNewEntities(oldEntities, result);
+
+                            deltaEntities = newEntities;
+
+                            if(newEntities.size() > 0)
+                            {
+                                entitiesToSave = result;
+                                showDownloadDialog(true);
+                            }
+                            else
+                            {
+                                entitiesToSave = null;
+                                showDownloadDialog(false);
+                            }
+
+                            /*Date date = mDropboxDateFormat.parse("");
+                            mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
+                            showDownloadDialog(date.after(mRecentUpdate));*/
+                        }
+                        catch (ClassNotFoundException | EOFException e)
+                        {
+                            try
+                            {
+                                File file = new File(getFilesDir()+"/dropbox_entities.dat");
+                                if(! file.exists()) file.createNewFile();
+                                entitiesToSave = result;
+                                deltaEntities = result;
+                                showDownloadDialog(true);
+
+                            }
+                            catch (IOException e1)
+                            {
+                                Log.e("ReadError1", "", e1);
+                            }
+                        }
+                        catch (IOException e2)
+                        {
+                            Log.e("ReadError1", "", e2);
                         }
                     }
                 });
@@ -307,9 +355,9 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         });
     }
 
-    private void startDownload(Boolean newVersionAvailable)
+    private void showDownloadDialog(Boolean newVersionAvailable)
     {
-        final DropboxDownloader downloader = new DropboxDownloader(mFolderUrl.replace("?dl=0", "?dl=1"), mFolderPath);
+        final DropboxDownloader downloader = new DropboxDownloader(mFolderUrl, mFolderPath);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
@@ -319,7 +367,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             if(newVersionAvailable)
             {
                 builder.setTitle(getString(R.string.update_dialog_title));
-                builder.setMessage(getString(R.string.update_dialog_desc));
+                builder.setMessage(getString(R.string.update_dialog_desc)+"\n"+DropboxEntity.getChangelog(deltaEntities, this));
             }
             else
             {
@@ -340,6 +388,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                     downloadPrefsEditor.putLong(DropboxDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
                     downloadPrefsEditor.apply();
                     saveData(mDropboxDateFormat.format(mNewRecentDate));
+                    saveEntities();
                 }
             });
             builder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
@@ -435,6 +484,20 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         loadData(this);
     }
 
+    private void saveEntities()
+    {
+        if(entitiesToSave == null) return;
+        try
+        {
+            FileOutputStream out = new FileOutputStream(getFilesDir()+"/dropbox_entities.dat");
+            ObjectOutputStream oout = new ObjectOutputStream(out);
+            oout.writeObject(entitiesToSave);
+        } catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public static class MyPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener
     {
 
@@ -454,6 +517,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                 case "notification":
                     if(prefs.getBoolean("notification", false))
                     {
+                        NotificationEventReceiver.setupAlarm(getContext(), Long.parseLong(prefs.getString("refresh_time", "240")));
                         findPreference("time").setEnabled(true);
                         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                         {
@@ -463,6 +527,10 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                         }
                     }
                     else findPreference("time").setEnabled(false);
+                    break;
+                /*case "extract":
+                    if(prefs.getBoolean("extract", true)) findPreference("original_dates").setEnabled(true);
+                    else findPreference("original_dates").setEnabled(false);*/
             }
         }
         @Override
@@ -497,6 +565,8 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             {
                 findPreference("time").setEnabled(false);
             }
+            /*if(prefs.getBoolean("extract", true)) findPreference("original_dates").setEnabled(true);
+            else findPreference("original_dates").setEnabled(false);*/
         }
     }
 

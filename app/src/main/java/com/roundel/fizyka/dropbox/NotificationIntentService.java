@@ -15,12 +15,19 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.activity.MainActivity;
 
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 public class NotificationIntentService extends IntentService
 {
@@ -89,25 +96,36 @@ public class NotificationIntentService extends IntentService
                 DropboxMetadata dropboxMetadata= new DropboxMetadata(MainActivity.mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
                 {
                     @Override
-                    public void onTaskEnd(String result)
+                    public void onTaskEnd(List<DropboxEntity> result)
                     {
                         try
                         {
-                            Date date;
-                            date = MainActivity.mDropboxDateFormat.parse(result);
-                            if(date.after(mRecentUpdate))
+                            File file = new File(getFilesDir() + "/dropbox_entities.dat");
+                            if (!file.exists()) file.createNewFile();
+
+                            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir() + "/dropbox_entities.dat"));
+                            List<DropboxEntity> oldEntities = (List<DropboxEntity>) ois.readObject();
+
+                            List<DropboxEntity> newEntities = DropboxEntity.getNewEntities(oldEntities, result);
+
+                            if (newEntities.size() > 0)
                             {
-                                Uri uri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                 Intent downloadIntent = new Intent();
                                 downloadIntent.setAction(DropboxDownloader.ACTION_DOWNLOAD);
-                                downloadIntent.putExtra("DATE", result);
+                                String jsonEntities = (new Gson()).toJson(result);
+
+                                downloadIntent.putExtra("ENTITIES", jsonEntities);
                                 PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                                String changelog = DropboxEntity.getChangelog(newEntities, getApplicationContext());
 
                                 final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                                 builder.setContentTitle(getString(R.string.notify_title))
                                         .setAutoCancel(false)
                                         .setColor(getColor(R.color.colorPrimary))
                                         .setContentText(getString(R.string.notify_desc))
+                                        .setStyle(new NotificationCompat.BigTextStyle().bigText(changelog))
                                         .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
                                         .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
                                         .setSound(uri);
@@ -118,15 +136,55 @@ public class NotificationIntentService extends IntentService
 
                                 final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify(NOTIFICATION_ID, builder.build());
-                            }
-                            else
+                            } else
                             {
-                                Log.d("NOTIFY", "No update");
+                                Log.d("IntentService", "No update");
                             }
-                        }
-                        catch (ParseException e)
-                        {
 
+                            /*Date date = mDropboxDateFormat.parse("");
+                            mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
+                            showDownloadDialog(date.after(mRecentUpdate));*/
+                        } catch (ClassNotFoundException | EOFException e)
+                        {
+                            try
+                            {
+                                File file = new File(getFilesDir() + "/dropbox_entities.dat");
+                                if (!file.exists()) file.createNewFile();
+
+                                Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+                                Intent downloadIntent = new Intent();
+                                downloadIntent.setAction(DropboxDownloader.ACTION_DOWNLOAD);
+
+                                String jsonEntities = (new Gson()).toJson(result);
+                                downloadIntent.putExtra("ENTITIES", jsonEntities);
+                                PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                                final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+                                builder.setContentTitle(getString(R.string.notify_title))
+                                        .setAutoCancel(false)
+                                        .setColor(getColor(R.color.colorPrimary))
+                                        .setContentText(getString(R.string.notify_desc))
+                                        .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
+                                        .setStyle(new NotificationCompat.BigTextStyle()
+                                                .bigText(getString(R.string.notify_desc_initial)))
+                                        .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
+                                        .setSound(uri);
+
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                                builder.setContentIntent(pendingIntent);
+                                builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
+
+                                final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.notify(NOTIFICATION_ID, builder.build());
+
+                            } catch (IOException e1)
+                            {
+                                Log.e("ReadError1", "", e1);
+                            }
+                        } catch (IOException e2)
+                        {
+                            Log.e("ReadError1", "", e2);
                         }
                     }
 
