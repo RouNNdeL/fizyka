@@ -175,6 +175,18 @@ public class DropboxEntity implements Serializable
         return this.date;
     }
 
+    public String getName()
+    {
+        String[] arr = this.path.split("/");
+        return Objects.equals(this.path, "/") ?null:arr[arr.length-1];
+    }
+
+    public String getParentDirectory()
+    {
+        if(this.getName() == null) return null;
+        return this.path.substring(0, this.path.length()-this.getName().length());
+    }
+
     public String getMimeType()
     {
         return mimeType;

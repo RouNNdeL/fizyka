@@ -4,7 +4,7 @@
     <string name="default_title">Reset</string>
     <string name="download_disc">Trwa pobieranie pliku</string>
     <string name="download_title">Fizyka</string>
-    <string name="main_activity_name">Fizyka</string>
+    <string name="activity_name_settings">Fizyka</string>
     <string name="menu_about">O aplikacji</string>
     <string name="menu_download">Pobierz</string>
     <string name="menu_refresh">Odświerz</string>
@@ -83,7 +83,8 @@
     <string name="settings_time_reference_summary">Czas, zgodnie z którym pojawiają się powiadomienia</string>
     <string name="settings_time_reference_title">Czas powiadomienia</string>
     <string name="notify_changelog_in">w</string>
-    <string name="notify_changelog_more">i jeszcze %s</string>
+    <string name="notify_changelog_more">i jeszcze %d</string>
     <string name="notify_changelog_root">Dropbox</string>
     <string name="notify_desc_initial">Pierwsze pobiernie. Lista zmian jest niedostępna</string>
+    <string name="menu_settings">Ustawienia</string>
 </resources>

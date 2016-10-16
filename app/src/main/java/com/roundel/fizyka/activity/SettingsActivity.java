@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
@@ -53,9 +52,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
-public class MainActivity extends AppCompatPreferenceActivity implements ActivityCompat.OnRequestPermissionsResultCallback
+public class SettingsActivity extends AppCompatPreferenceActivity implements ActivityCompat.OnRequestPermissionsResultCallback
 {
     public static String mFolderUrl;
     public static String mFolderPath;
@@ -134,7 +132,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                                 }
                                 else
                                 {
-                                    Log.d("MainActivity", "Coordinator is null");
+                                    Log.d("SettingsActivity", "Coordinator is null");
                                 }
                             }
                         }
@@ -156,7 +154,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
+        inflater.inflate(R.menu.settings_activity_menu, menu);
         return true;
     }
 
@@ -202,15 +200,15 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         }
         else if(requestCode == SWITCH  && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
-            Toast.makeText(MainActivity.this, getString(R.string.permission_allowed_notification), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SettingsActivity.this, getString(R.string.permission_allowed_notification), Toast.LENGTH_SHORT).show();
         }
         else if(requestCode != SWITCH)
         {
-            Toast.makeText(MainActivity.this, getString(R.string.permission_denied_WRITE_EXTERNAL_STOARGE), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SettingsActivity.this, getString(R.string.permission_denied_WRITE_EXTERNAL_STOARGE), Toast.LENGTH_SHORT).show();
         }
         else
         {
-            Toast.makeText(MainActivity.this, getString(R.string.permission_denied_notification), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SettingsActivity.this, getString(R.string.permission_denied_notification), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -232,7 +230,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                     @Override
                     public void onTaskStart()
                     {
-                        Toast.makeText(MainActivity.this, getString(R.string.toast_refresh_start), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SettingsActivity.this, getString(R.string.toast_refresh_start), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -306,19 +304,19 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                                 dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
                                 break;
                             case DropboxLinkValidator.ERROR_FORBIDDEN:
-                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, getString(R.string.toast_error_forbidden), Toast.LENGTH_SHORT).show();
                                 completeRefresh(refreshItem);
                                 break;
                             case DropboxLinkValidator.ERROR_NOT_FOUND:
-                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, getString(R.string.toast_error_not_found), Toast.LENGTH_SHORT).show();
                                 completeRefresh(refreshItem);
                                 break;
                             case DropboxLinkValidator.ERROR_CONNECTION_TIMED_OUT:
-                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, getString(R.string.toast_error_connection_timed_out), Toast.LENGTH_SHORT).show();
                                 completeRefresh(refreshItem);
                                 break;
                             default:
-                                Toast.makeText(MainActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SettingsActivity.this, getString(R.string.toast_error_unknown), Toast.LENGTH_SHORT).show();
                                 completeRefresh(refreshItem);
                                 break;
                         }
@@ -331,7 +329,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
             public void onConnectionUnavailable()
             {
                 completeRefresh(refreshItem);
-                //Toast.makeText(MainActivity.this, getResources().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(SettingsActivity.this, getResources().getString(R.string.toast_no_network), Toast.LENGTH_SHORT).show();
                 if(rootView != null)
                 {
                     Snackbar snackbar = Snackbar
@@ -349,7 +347,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
                 }
                 else
                 {
-                    Log.d("MainActivity", "Coordinator is null");
+                    Log.d("SettingsActivity", "Coordinator is null");
                 }
             }
         });
@@ -361,7 +359,7 @@ public class MainActivity extends AppCompatPreferenceActivity implements Activit
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, newVersionAvailable ? UPDATE : NO_UPDATE);
+            ActivityCompat.requestPermissions(SettingsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, newVersionAvailable ? UPDATE : NO_UPDATE);
         }
         else{
             if(newVersionAvailable)

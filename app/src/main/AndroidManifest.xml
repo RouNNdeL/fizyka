@@ -15,15 +15,27 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="@string/main_activity_name"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+        <activity android:name=".activity.FileExplorerActivity"
+                  android:label="@string/app_name"
+                  android:screenOrientation="portrait">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN"/>
+
+                    <category android:name="android.intent.category.LAUNCHER"/>
+                </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/activity_name_settings"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.FileExplorerActivity">
+        </activity>
+
+        <activity android:name=".activity.AboutActivity"
+                  android:label="@string/about_activity_name"
+                  android:screenOrientation="portrait"
+                  android:parentActivityName=".activity.FileExplorerActivity">
         </activity>
 
         <service
@@ -59,11 +71,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activity.AboutActivity"
-                  android:label="@string/about_activity_name"
-                  android:screenOrientation="portrait"
-                  android:parentActivityName=".activity.MainActivity">
-        </activity>
+
     </application>
 
 </manifest>

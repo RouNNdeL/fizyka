@@ -18,7 +18,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.R;
-import com.roundel.fizyka.activity.MainActivity;
+import com.roundel.fizyka.activity.SettingsActivity;
 
 import java.io.EOFException;
 import java.io.File;
@@ -77,7 +77,7 @@ public class NotificationIntentService extends IntentService
         final String mFolderUrl = sp.getString("download_url", "https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0");
         try
         {
-            mRecentUpdate = MainActivity.mDropboxDateFormat.parse(sp.getString("date", "Thu, 01 Jan 1970 00:00:00 +0000"));
+            mRecentUpdate = SettingsActivity.mDropboxDateFormat.parse(sp.getString("date", "Thu, 01 Jan 1970 00:00:00 +0000"));
         }catch (ParseException e)
         {
             Log.d("DATE", e.getMessage());
@@ -93,7 +93,7 @@ public class NotificationIntentService extends IntentService
             @Override
             public void onConnectionAvailable(Long responseTime)
             {
-                DropboxMetadata dropboxMetadata= new DropboxMetadata(MainActivity.mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
+                DropboxMetadata dropboxMetadata= new DropboxMetadata(SettingsActivity.mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
                 {
                     @Override
                     public void onTaskEnd(List<DropboxEntity> result)
@@ -130,7 +130,7 @@ public class NotificationIntentService extends IntentService
                                         .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
                                         .setSound(uri);
 
-                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), SettingsActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
                                 builder.setContentIntent(pendingIntent);
                                 builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
 
@@ -171,7 +171,7 @@ public class NotificationIntentService extends IntentService
                                         .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
                                         .setSound(uri);
 
-                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), SettingsActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
                                 builder.setContentIntent(pendingIntent);
                                 builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
 

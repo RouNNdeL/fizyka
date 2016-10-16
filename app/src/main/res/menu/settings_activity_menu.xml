@@ -15,9 +15,5 @@
         android:id="@+id/menu_clear_date"
         android:title="Clear date"
         app:showAsAction="never"
-        android:visible="false"/>  
-    <item
-        android:id="@+id/menu_about"
-        android:title="@string/menu_about"
-        app:showAsAction="never"/>
+        android:visible="false"/>
 </menu>
