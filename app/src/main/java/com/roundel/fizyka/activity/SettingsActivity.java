@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.DateFormat;
@@ -63,6 +64,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     public static DateFormat mDropboxDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
     public static String UNIX_BEGGING_DATE = "Thu, 01 Jan 1970 00:00:00 +0000";
+    public static final String PREFERENCE_FRAGMENT_ID = "com.roundel.fizyka.FRAGMENT";
 
     public int NO_UPDATE = 1;
     public int UPDATE = 0;
@@ -77,7 +79,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MyPreferenceFragment preferenceFragment = new MyPreferenceFragment();
-        getFragmentManager().beginTransaction().replace(android.R.id.content, preferenceFragment).commit();
+        getFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, preferenceFragment)
+                /*.addToBackStack(PREFERENCE_FRAGMENT_ID)*/
+                .commit();
         loadData(this);
         rootView = findViewById(android.R.id.content);
 
@@ -171,20 +177,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                 dialog.setArguments(args);
                 dialog.show(getFragmentManager(), "tag");
                 return true;
+
             case R.id.menu_refresh:
                 checkForUpdates(item);
-
                 return true;
+
             case R.id.menu_clear_date:
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
                 editor.putString("date", UNIX_BEGGING_DATE);
                 editor.apply();
                 return true;
+
             case R.id.menu_about:
                 Intent intent = new Intent(this, AboutActivity.class);
                 startActivity(intent);
+                return true;
+
+            case android.R.id.home:
+                super.onBackPressed();
+                return super.onOptionsItemSelected(item);
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -211,6 +224,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
             Toast.makeText(SettingsActivity.this, getString(R.string.permission_denied_notification), Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     private void checkForUpdates(final MenuItem refreshItem)
     {
@@ -260,12 +275,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                                 entitiesToSave = null;
                                 showDownloadDialog(false);
                             }
-
-                            /*Date date = mDropboxDateFormat.parse("");
-                            mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
-                            showDownloadDialog(date.after(mRecentUpdate));*/
                         }
-                        catch (ClassNotFoundException | EOFException e)
+                        catch (InvalidClassException | ClassNotFoundException | EOFException e)
                         {
                             try
                             {

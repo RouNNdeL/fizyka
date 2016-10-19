@@ -64,13 +64,21 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
     protected void checkSubdirectories(String url, String folder, String path)
     {
         String response = singlePOST(url, folder, path);
-        //Log.d(TAG, response);
+        Log.d(TAG, response);
         try{
             JSONObject jsonObject = new JSONObject(response);
+
             Boolean isDir = jsonObject.getBoolean("is_dir");
             String mimeType = null;
+            int size;
             if(jsonObject.has("mime_type")) mimeType = jsonObject.getString("mime_type");
-            entities.add(new DropboxEntity(isDir?DropboxEntity.TYPE_FOLDER:DropboxEntity.TYPE_FILE, path, mimeType, dateFormat.parse(jsonObject.getString("modified"))));
+            if(isDir && jsonObject.has("contents")) size = jsonObject.getJSONArray("contents").length();
+            else size = jsonObject.getInt("bytes");
+            entities.add(new DropboxEntity(isDir?DropboxEntity.TYPE_FOLDER:DropboxEntity.TYPE_FILE,
+                    path,
+                    size,
+                    mimeType,
+                    dateFormat.parse(jsonObject.getString("modified"))));
             if(jsonObject.has("contents"))
             {
                 JSONArray arr = jsonObject.getJSONArray("contents");

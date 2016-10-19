@@ -25,11 +25,10 @@
                     <category android:name="android.intent.category.LAUNCHER"/>
                 </intent-filter>
         </activity>
-        <activity
-            android:name=".activity.SettingsActivity"
-            android:label="@string/activity_name_settings"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".activity.FileExplorerActivity">
+        <activity android:name=".activity.SettingsActivity"
+                  android:label="@string/activity_name_settings"
+                  android:screenOrientation="portrait"
+                  android:parentActivityName=".activity.FileExplorerActivity">
         </activity>
 
         <activity android:name=".activity.AboutActivity"

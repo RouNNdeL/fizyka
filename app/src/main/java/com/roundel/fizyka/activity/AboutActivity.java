@@ -49,7 +49,7 @@ public class AboutActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://github.com/rounndel/fizyka")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/rounndel/fizyka")));
             }
         });
         Connectivity.hasAccess(new Connectivity.onHasAccessResponse()

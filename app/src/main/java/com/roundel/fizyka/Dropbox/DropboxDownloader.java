@@ -37,7 +37,7 @@ public class DropboxDownloader
             }
             else url+="?dl=1";
         }
-        Log.d("DropboxDownloader", url);
+        //Log.d("DropboxDownloader", url);
         mDownloadURL = url;
         mPath = path;
     }

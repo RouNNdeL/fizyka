@@ -29,9 +29,24 @@ import java.util.Locale;
  */
 public class FileAdapter extends ArrayAdapter<DropboxEntity>
 {
-    private List<String> MIME_TYPE_PDF = new ArrayList<String>(Arrays.asList(new String[]{"application/pdf", "application/x-pdf"}));
-    private List<String> MIME_TYPE_TXT = new ArrayList<String>(Arrays.asList(new String[]{"application/octet-stream", "text/plain"}));
-    private List<String> MIME_TYPE_IMAGE = new ArrayList<String>(Arrays.asList(new String[]{"image/jpg", "image/jpeg", "image/*", "image/bmp", "image/png", "image/gif", "image/x-icon", "image/x-rgb"}));
+    private List<String> MIME_TYPE_PDF = new ArrayList<String>(Arrays.asList(new String[]{
+            "application/pdf",
+            "application/x-pdf"
+    }));
+    private List<String> MIME_TYPE_TXT = new ArrayList<String>(Arrays.asList(new String[]{
+            "application/octet-stream",
+            "text/plain"
+    }));
+    private List<String> MIME_TYPE_IMAGE = new ArrayList<String>(Arrays.asList(new String[]{
+            "image/jpg",
+            "image/jpeg",
+            "image/*",
+            "image/bmp",
+            "image/png",
+            "image/gif",
+            "image/x-icon",
+            "image/x-rgb"
+    }));
 
     private int mResource;
     private DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
@@ -61,8 +76,10 @@ public class FileAdapter extends ArrayAdapter<DropboxEntity>
         {
             ImageView imageView = (ImageView) fileView.findViewById(R.id.fileIcon);
             Drawable icon;
+            TextView size = (TextView) fileView.findViewById(R.id.fileSize);
             if (entity.getType() == DropboxEntity.TYPE_FILE)
             {
+                size.setText(DropboxEntity.formatSize(entity.getSize(), getContext()));
                 //ImageView iconBg = (ImageView) fileView.findViewById(R.id.fileIconBg);
                 //iconBg.setColorFilter(getContext().getColor(android.R.color.white), PorterDuff.Mode.CLEAR);
                 imageView.setScaleX(0.9f);
@@ -90,6 +107,16 @@ public class FileAdapter extends ArrayAdapter<DropboxEntity>
             }
             else
             {
+                if(entity.getSize() == 1)
+                    size.setText(String.format(
+                    Locale.getDefault(),
+                    getContext().getString(R.string.file_item),
+                    entity.getSize()));
+                else
+                    size.setText(String.format(
+                            Locale.getDefault(),
+                            getContext().getString(R.string.file_item_plural),
+                            entity.getSize()));
                 icon = getContext().getDrawable(R.drawable.file_folder_black_24dp);
                 icon.setColorFilter(getContext().getColor(R.color.folderGrey), PorterDuff.Mode.SRC_ATOP);
             }

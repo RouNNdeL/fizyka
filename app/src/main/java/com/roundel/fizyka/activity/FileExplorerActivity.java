@@ -2,6 +2,7 @@ package com.roundel.fizyka.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,20 +16,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.roundel.fizyka.FileAdapter;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.dropbox.DropboxEntity;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.prefs.PreferenceChangeEvent;
 
 /**
  * Created by RouNdeL on 2016-10-16.
@@ -54,6 +57,8 @@ public class FileExplorerActivity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        folderPath = preferences.getString("download_path", "");
         try
         {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir()+"/dropbox_entities.dat"));
@@ -81,17 +86,35 @@ public class FileExplorerActivity extends AppCompatActivity
                     {
                         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath+clickedItem.getPath());
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setType(clickedItem.getMimeType());
-                        intent.setData(Uri.fromFile(file));
-                        startActivity(intent);
+                        intent.setType(clickedItem.getMimeType())
+                                .setData(Uri.fromFile(file));
+                        PackageManager packageManager = getPackageManager();
+                        List activities = packageManager.queryIntentActivities(intent,
+                                PackageManager.MATCH_DEFAULT_ONLY);
+                        boolean isIntentSafe = activities.size() > 0;
+                        if (isIntentSafe)
+                        {
+                            startActivity(intent);
+                        }
+                        else
+                        {
+                            Toast.makeText(FileExplorerActivity.this, getString(R.string.file_no_app), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
 
 
-        } catch (NullPointerException | IOException | ClassNotFoundException e)
+        } catch (InvalidClassException|  ClassNotFoundException | EOFException e)
         {
-            e.printStackTrace();
+            TextView textView = (TextView) findViewById(R.id.updateRequiredTextView);
+            textView.setVisibility(View.VISIBLE);
+            textView.setText("Update required");
+            findViewById(R.id.fileListView).setVisibility(View.GONE);
+        }
+        catch (IOException e1)
+        {
+            e1.printStackTrace();
         }
     }
 

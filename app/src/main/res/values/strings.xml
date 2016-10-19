@@ -1,7 +1,20 @@
 <resources>
     <string name="app_name">Fizyka</string>
 
-    <!--Main activity-->
+    <!--FileExplorerActivity-->
+    <string name="file_no_app">No app installed to handle that file type</string>
+    <string name="file_item">%d item</string>
+    <string name="file_item_plural">%d items</string>
+    <string name="file_byte">%1$,.2f bytes</string>
+    <string name="file_byte_plural">%1$,.2f bytes</string>
+    <string name="file_kilobyte" translatable="false">%1$,.2f kB</string>
+    <string name="file_megabyte" translatable="false">%1$,.2f MB</string>
+    <string name="file_gigabyte" translatable="false">%1$,.2f GB</string>
+    <string name="file_terabyte" translatable="false">%1$,.2f TB</string>
+    <string name="file_petabyte" translatable="false">%1$,.2f PT</string>
+    <string name="file_exabyte" translatable="false">%1$,.2f EB</string>
+
+    <!--Settings activity-->
     <string name="activity_name_settings">Settings</string>
     <string name="toast_invalid_path">The path you entered is invaild</string>
 

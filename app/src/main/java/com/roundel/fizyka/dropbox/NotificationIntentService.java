@@ -18,6 +18,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.R;
+import com.roundel.fizyka.activity.FileExplorerActivity;
 import com.roundel.fizyka.activity.SettingsActivity;
 
 import java.io.EOFException;
@@ -118,19 +119,29 @@ public class NotificationIntentService extends IntentService
                                 downloadIntent.putExtra("ENTITIES", jsonEntities);
                                 PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
-                                String changelog = DropboxEntity.getChangelog(newEntities, getApplicationContext());
+                                NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+                                        .setBigContentTitle(getString(R.string.notify_title));
+                                for(DropboxEntity entity : newEntities)
+                                {
+                                    if(entity.getType() == DropboxEntity.TYPE_FILE) style
+                                            .addLine(entity.getName()+" "
+                                                    +getString(R.string.notify_changelog_in) +" "
+                                                    +entity.getParentDirectory().replace("/", ""));
+                                }
+
+                                if(newEntities.size() > 7) style.setSummaryText(String.format(getString(R.string.notify_changelog_more), newEntities.size()-7));
 
                                 final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                                 builder.setContentTitle(getString(R.string.notify_title))
                                         .setAutoCancel(false)
                                         .setColor(getColor(R.color.colorPrimary))
                                         .setContentText(getString(R.string.notify_desc))
-                                        .setStyle(new NotificationCompat.BigTextStyle().bigText(changelog))
+                                        .setStyle(style)
                                         .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
                                         .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
                                         .setSound(uri);
 
-                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), SettingsActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), FileExplorerActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
                                 builder.setContentIntent(pendingIntent);
                                 builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
 
@@ -160,18 +171,31 @@ public class NotificationIntentService extends IntentService
                                 downloadIntent.putExtra("ENTITIES", jsonEntities);
                                 PendingIntent pendingDownloadIntent = PendingIntent.getBroadcast(getApplicationContext(), NOTIFICATION_ID, downloadIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
+                                NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
+                                        .setBigContentTitle(getString(R.string.notify_title));
+                                for(DropboxEntity entity : result)
+                                {
+                                    if(entity.getType() == DropboxEntity.TYPE_FILE) style
+                                            .addLine(entity.getName()+" "
+                                                    +getString(R.string.notify_changelog_in) +" "
+                                                    +entity.getParentDirectory().replace("/", ""));
+                                }
+
+                                if(result.size() > 7) style.setSummaryText(String.format(getString(R.string.notify_changelog_more), result.size()-7));
+
                                 final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                                 builder.setContentTitle(getString(R.string.notify_title))
                                         .setAutoCancel(false)
                                         .setColor(getColor(R.color.colorPrimary))
                                         .setContentText(getString(R.string.notify_desc))
                                         .setSmallIcon(R.drawable.ic_cloud_download_white_24dp)
-                                        .setStyle(new NotificationCompat.BigTextStyle()
-                                                .bigText(getString(R.string.notify_desc_initial)))
+                                        /*.setStyle(new NotificationCompat.BigTextStyle()
+                                                .bigText(getString(R.string.notify_desc_initial)))*/
+                                        .setStyle(style)
                                         .addAction(R.drawable.ic_file_download_white_24dp, getString(R.string.download_notify_button), pendingDownloadIntent)
                                         .setSound(uri);
 
-                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), SettingsActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), NOTIFICATION_ID, new Intent(getApplicationContext(), FileExplorerActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
                                 builder.setContentIntent(pendingIntent);
                                 builder.setDeleteIntent(NotificationEventReceiver.getDeleteIntent(getApplicationContext()));
 

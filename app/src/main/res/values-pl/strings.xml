@@ -87,4 +87,9 @@
     <string name="notify_changelog_root">Dropbox</string>
     <string name="notify_desc_initial">Pierwsze pobiernie. Lista zmian jest niedostępna</string>
     <string name="menu_settings">Ustawienia</string>
+    <string name="file_byte">%1$,.2f bajt</string>
+    <string name="file_byte_plural">%1$,.2f bajtów</string>
+    <string name="file_no_app">Nie znaleziono aplikacji zdolnej otworzyć ten plik</string>
+    <string name="file_item">Ilość plików: %d</string>
+    <string name="file_item_plural">Ilość plików: %d</string>
 </resources>

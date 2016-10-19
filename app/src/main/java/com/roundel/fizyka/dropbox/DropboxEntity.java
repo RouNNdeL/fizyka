@@ -16,6 +16,7 @@ import android.util.*;
 import com.roundel.fizyka.R;
 
 import java.io.*;
+import java.util.zip.ZipEntry;
 
 public class DropboxEntity implements Serializable
 {
@@ -28,18 +29,20 @@ public class DropboxEntity implements Serializable
     private String path;
     private Date date;
     private String mimeType;
+    private long size;
 
     //Constructors
-    public DropboxEntity(int type, @NonNull String path, @Nullable String mimeType, @NonNull Date date)
+    public DropboxEntity(int type, @NonNull String path, long size, @Nullable String mimeType, @NonNull Date date)
     {
         this.setType(type);
         this.path = path;
         this.date = date;
         this.mimeType = mimeType;
+        this.size = size;
     }
     public DropboxEntity(int type, @NonNull String path, @NonNull Date date)
     {
-        this(type, path, null, date);
+        this(type, path, 0, null, date);
     }
     public DropboxEntity(int type, @NonNull String path)
     {
@@ -147,18 +150,51 @@ public class DropboxEntity implements Serializable
                         " "+parts[parts.length-2]+"\n";
             }
         }
-        String[] lines = result.split("\r\n|\r|\n");
-        Log.d("Lines", Integer.toString(lines.length));
-        if(lines.length > DropboxEntity.BIG_NOTIFICATION_MAX_LINES+1)
-        {
-            result = "";
-            for (int i = 0; i < DropboxEntity.BIG_NOTIFICATION_MAX_LINES; i++)
-            {
-                result+=lines[i]+"\n";
-            }
-            result+="... "+String.format(context.getString(R.string.notify_changelog_more), lines.length-DropboxEntity.BIG_NOTIFICATION_MAX_LINES);
-        }
         return result;
+    }
+
+    public static String formatSize(long longSize, Context context)
+    {
+        final double SIZE_KILO = 1024;
+        final double SIZE_MEGA = SIZE_KILO*SIZE_KILO;
+        final double SIZE_GIGA = SIZE_MEGA*SIZE_KILO;
+        final double SIZE_TERA = SIZE_GIGA*SIZE_KILO;
+        final double SIZE_PETA = SIZE_TERA*SIZE_KILO;
+        final double SIZE_EXA = SIZE_MEGA*SIZE_KILO;
+        final double size = (double) longSize;
+        if(size < SIZE_KILO)
+            if(size == 1)
+                return String.format(Locale.getDefault(),
+                        context.getString(R.string.file_byte),
+                        size);
+            else
+                return String.format(Locale.getDefault(),
+                        context.getString(R.string.file_byte_plural),
+                        size);
+        else if(size < SIZE_MEGA)
+            return String.format(Locale.getDefault(),
+                    context.getString(R.string.file_kilobyte),
+                    size/SIZE_KILO);
+        else if(size < SIZE_GIGA)
+            return String.format(Locale.getDefault(),
+                    context.getString(R.string.file_megabyte),
+                    size/SIZE_MEGA);
+        else if(size < SIZE_TERA)
+            return String.format(Locale.getDefault(),
+                    context.getString(R.string.file_gigabyte),
+                    size/SIZE_GIGA);
+        else if(size < SIZE_PETA)
+            return String.format(Locale.getDefault(),
+                    context.getString(R.string.file_terabyte),
+                    size/SIZE_TERA);
+        else if(size < SIZE_EXA)
+            return String.format(Locale.getDefault(),
+                    context.getString(R.string.file_petabyte),
+                    size/SIZE_PETA);
+        else
+            return String.format(Locale.getDefault(),
+                    context.getString(R.string.file_exabyte),
+                    size/SIZE_EXA);
     }
 
     //Getters
@@ -174,6 +210,14 @@ public class DropboxEntity implements Serializable
     {
         return this.date;
     }
+    public long getSize()
+    {
+        return this.size;
+    }
+    public String getMimeType()
+    {
+        return mimeType;
+    }
 
     public String getName()
     {
@@ -185,11 +229,6 @@ public class DropboxEntity implements Serializable
     {
         if(this.getName() == null) return null;
         return this.path.substring(0, this.path.length()-this.getName().length());
-    }
-
-    public String getMimeType()
-    {
-        return mimeType;
     }
 
     //Setters
@@ -211,7 +250,10 @@ public class DropboxEntity implements Serializable
     {
         this.date = date;
     }
-
+    public void setSize(long size)
+    {
+        this.size = size;
+    }
     public void setMimeType(String mimeType)
     {
         this.mimeType = mimeType;
