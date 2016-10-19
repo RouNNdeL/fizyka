@@ -10,11 +10,15 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,6 +47,7 @@ public class FileExplorerActivity extends AppCompatActivity
     private static String backPath = "/";
     private static List<DropboxEntity> mEntities = new ArrayList<DropboxEntity>();
     private static ListView mListView;
+    private static LinearLayout mPathsContainer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -65,8 +70,10 @@ public class FileExplorerActivity extends AppCompatActivity
             mEntities = (List<DropboxEntity>) ois.readObject();
 
             mListView = (ListView) findViewById(R.id.fileListView);
+            mPathsContainer = (LinearLayout) findViewById(R.id.currentPathContainer);
 
             updateListView(mListView, mEntities, currentPath);
+            updatePathContainer(mPathsContainer, currentPath);
 
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
             {
@@ -81,13 +88,13 @@ public class FileExplorerActivity extends AppCompatActivity
                         backPath = clickedItem.getParentDirectory();
                         String test = clickedItem.getPath();
                         updateListView(mListView, mEntities, currentPath);
+                        updatePathContainer(mPathsContainer, currentPath);
                     }
                     else
                     {
                         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath+clickedItem.getPath());
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setType(clickedItem.getMimeType())
-                                .setData(Uri.fromFile(file));
+                        intent.setDataAndType(Uri.fromFile(file), clickedItem.getMimeType());
                         PackageManager packageManager = getPackageManager();
                         List activities = packageManager.queryIntentActivities(intent,
                                 PackageManager.MATCH_DEFAULT_ONLY);
@@ -151,7 +158,9 @@ public class FileExplorerActivity extends AppCompatActivity
         else
         {
             updateListView(mListView, mEntities, backPath);
+            updatePathContainer(mPathsContainer, backPath);
             currentPath = backPath;
+            backPath = DropboxEntity.getParentDirectoryFromString(currentPath);
         }
     }
 
@@ -167,5 +176,45 @@ public class FileExplorerActivity extends AppCompatActivity
         }
         FileAdapter adapter = new FileAdapter(this, R.layout.file_row, entitiesFromPath);
         listView.setAdapter(adapter);
+    }
+
+    private void updatePathContainer(LinearLayout container, String path)
+    {
+        View current;
+        String totalPath = "/";
+        container.removeAllViews();
+        current = addChild(container, "/", totalPath);
+        for (String folder: path.split("/"))
+        {
+            if(!folder.isEmpty())
+            {
+                totalPath += folder+"/";
+                current = addChild(container, folder, totalPath);
+            }
+        }
+        TextView textView = (TextView) current.findViewById(R.id.file_path_textview);
+        ImageView imageView = (ImageView) current.findViewById(R.id.file_path_arrow);
+        textView.setTextColor(getColor(R.color.white));
+        imageView.setVisibility(View.GONE);
+    }
+    private View addChild(final LinearLayout layout, String name, String path)
+    {
+        LinearLayout child = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.file_path_part, null);
+        TextView textView = (TextView) child.findViewById(R.id.file_path_textview);
+        textView.setText(name);
+        textView.setTextColor(getColor(R.color.white_text_secondary));
+        child.setTag(R.id.path_key, path);
+        child.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                String path = view.getTag(R.id.path_key).toString();
+                updateListView(mListView, mEntities, path);
+                updatePathContainer(layout, path);
+            }
+        });
+        layout.addView(child, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        return child;
     }
 }

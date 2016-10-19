@@ -231,6 +231,21 @@ public class DropboxEntity implements Serializable
         return this.path.substring(0, this.path.length()-this.getName().length());
     }
 
+    @Nullable
+    public static String getNameFromString(String path)
+    {
+        String[] arr = path.split("/");
+        return Objects.equals(path, "/") ?null:arr[arr.length-1];
+    }
+
+    @Nullable
+    public static String getParentDirectoryFromString(String path)
+    {
+        if(DropboxEntity.getNameFromString(path) == null) return null;
+        int add = path.charAt(path.length()-1) == '/'?-1:0;
+        return path.substring(0, path.length()-DropboxEntity.getNameFromString(path).length()+add);
+    }
+
     //Setters
     public void setType(int type)
     {

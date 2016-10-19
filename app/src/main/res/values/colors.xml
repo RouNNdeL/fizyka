@@ -9,4 +9,7 @@
     <color name="folderGrey">#616161</color>
     <color name="secondaryText">#B3000000</color>
     <color name="primaryText">#DE000000</color>
+    <color name="white">#FFF</color>
+    <color name="white_text_secondary">#B3FFFFFF</color>
+    <color name="grey_15">#1E000000</color>
 </resources>
