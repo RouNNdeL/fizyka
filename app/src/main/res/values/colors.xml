@@ -4,11 +4,19 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF9800</color>
     <color name="lightGrey">#e0e0e0</color>
+
     <color name="pdfRed">#e53935</color>
     <color name="textBlue">#3d5afe</color>
     <color name="folderGrey">#616161</color>
     <color name="secondaryText">#B3000000</color>
     <color name="primaryText">#DE000000</color>
+
+    <color name="pdfRed_disabled">#80e53935</color>
+    <color name="textBlue_disabled">#803d5afe</color>
+    <color name="folderGrey_disabled">#80616161</color>
+    <color name="secondaryText_disabled">#33000000</color>
+    <color name="primaryText_disabled">#5E000000</color>
+
     <color name="white">#FFF</color>
     <color name="white_text_secondary">#B3FFFFFF</color>
     <color name="grey_15">#1E000000</color>

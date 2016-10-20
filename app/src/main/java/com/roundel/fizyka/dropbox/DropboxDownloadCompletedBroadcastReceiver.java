@@ -14,14 +14,12 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import com.roundel.fizyka.R;
-import com.roundel.fizyka.UnzipUtility;
+
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -67,14 +65,17 @@ public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastR
 
             if(prefs.getBoolean("extract", true))
             {
+                String destination = Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath;
+                String source = destination+context.getString(R.string.file_name);
 
-                UnzipUtility zip = new UnzipUtility();
-                try
-                {
-                    zip.unzip(Environment.getExternalStorageDirectory() + folderPath + context.getString(R.string.file_name), Environment.getExternalStorageDirectory() + folderPath);
-                } catch (IOException e)
-                {
-                    Log.e("ZIP", e.getMessage());
+                try {
+                    ZipFile zipFile = new ZipFile(source);
+                    if (zipFile.isEncrypted()) {
+                        throw new ZipException("File is encrypted");
+                    }
+                    zipFile.extractAll(destination);
+                } catch (ZipException e) {
+                    e.printStackTrace();
                 }
             }
             /*if(prefs.getBoolean("dates", true))

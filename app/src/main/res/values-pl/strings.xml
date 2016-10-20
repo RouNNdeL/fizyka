@@ -92,4 +92,7 @@
     <string name="file_no_app">Nie znaleziono aplikacji zdolnej otworzyć ten plik</string>
     <string name="file_item">Ilość plików: %d</string>
     <string name="file_item_plural">Ilość plików: %d</string>
+    <string name="class_changed_update">Wymagana jest aktualizacja plików</string>
+    <string name="file_missing">(brakujący plik)</string>
+    <string name="missing_files">Niektóre pliki</string>
 </resources>

@@ -64,7 +64,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
     protected void checkSubdirectories(String url, String folder, String path)
     {
         String response = singlePOST(url, folder, path);
-        Log.d(TAG, response);
+        //Log.d(TAG, response);
         try{
             JSONObject jsonObject = new JSONObject(response);
 

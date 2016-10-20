@@ -246,6 +246,21 @@ public class DropboxEntity implements Serializable
         return path.substring(0, path.length()-DropboxEntity.getNameFromString(path).length()+add);
     }
 
+    public boolean fileExists(String rootPath)
+    {
+        if(!Objects.equals(rootPath.charAt(rootPath.length()-1), '/')) rootPath+="/";
+        return new File(rootPath+this.getPath()).exists();
+    }
+
+    public static boolean filesExist(List<DropboxEntity> entities, String rootPath)
+    {
+        for(DropboxEntity entity : entities)
+        {
+            if(!entity.fileExists(rootPath)) return false;
+        }
+        return true;
+    }
+
     //Setters
     public void setType(int type)
     {

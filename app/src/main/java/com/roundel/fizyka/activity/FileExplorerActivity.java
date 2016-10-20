@@ -69,6 +69,11 @@ public class FileExplorerActivity extends AppCompatActivity
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir()+"/dropbox_entities.dat"));
             mEntities = (List<DropboxEntity>) ois.readObject();
 
+            if (!DropboxEntity.filesExist(mEntities, Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath))
+            {
+                Toast.makeText(FileExplorerActivity.this, getString(R.string.missing_files), Toast.LENGTH_LONG).show();
+            }
+
             mListView = (ListView) findViewById(R.id.fileListView);
             mPathsContainer = (LinearLayout) findViewById(R.id.currentPathContainer);
 
@@ -116,7 +121,7 @@ public class FileExplorerActivity extends AppCompatActivity
         {
             TextView textView = (TextView) findViewById(R.id.updateRequiredTextView);
             textView.setVisibility(View.VISIBLE);
-            textView.setText("Update required");
+            textView.setText(getString(R.string.class_changed_update));
             findViewById(R.id.fileListView).setVisibility(View.GONE);
         }
         catch (IOException e1)
@@ -174,7 +179,7 @@ public class FileExplorerActivity extends AppCompatActivity
                 entitiesFromPath.add(entity);
             }
         }
-        FileAdapter adapter = new FileAdapter(this, R.layout.file_row, entitiesFromPath);
+        FileAdapter adapter = new FileAdapter(this, R.layout.file_row, entitiesFromPath, folderPath);
         listView.setAdapter(adapter);
     }
 

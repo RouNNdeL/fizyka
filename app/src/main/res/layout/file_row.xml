@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="60dp">
@@ -22,15 +23,31 @@
         android:orientation="vertical"
         android:layout_margin="4dp"
         android:gravity="bottom|start">
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fileText"
-            android:gravity="bottom|start"
-            android:textSize="16sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:paddingTop="8dp"/>
+            android:orientation="horizontal"
+            android:gravity="bottom">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/fileText"
+                android:gravity="start"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:paddingTop="8dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2.5"
+                android:id="@+id/fileMissing"
+                android:gravity="end"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:paddingTop="8dp"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
