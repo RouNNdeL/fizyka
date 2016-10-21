@@ -95,4 +95,5 @@
     <string name="class_changed_update">Wymagana jest aktualizacja plików</string>
     <string name="file_missing">(brakujący plik)</string>
     <string name="missing_files">Niektóre pliki mogą nie istnieć, ponowne pobranie możę być potrzebne</string>
+    <string name="folder_missing">(brakujący folder)</string>
 </resources>

@@ -6,7 +6,4 @@
             <enum name="url" value="1"/>
         </attr>
     </declare-styleable>
-    <declare-styleable name="PriorityLayoutHorizontal">
-        <attr name="priorityHigh" format="reference"/>
-    </declare-styleable>
 </resources>

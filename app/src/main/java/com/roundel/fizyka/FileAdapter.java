@@ -121,13 +121,13 @@ public class FileAdapter extends BaseAdapter
 
                 if (!fileView.isEnabled())
                 {
-                    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                    params.weight = 2.5f;
+                    //LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    //params.weight = 2.5f;
 
                     TextView fileMissing = (TextView) fileView.findViewById(R.id.fileMissing);
                     fileMissing.setText(mContext.getString(R.string.file_missing));
                     fileMissing.setTextColor(mContext.getColor(R.color.primaryText_disabled));
-                    fileMissing.setLayoutParams(params);
+                    //fileMissing.setLayoutParams(params);
 
                     fileView.setClickable(!file.exists());
                 }
@@ -165,12 +165,12 @@ public class FileAdapter extends BaseAdapter
             {
                 if (!fileView.isEnabled())
                 {
-                    LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                    params.weight = 2f;
+                    //LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                    //params.weight = 2f;
                     TextView fileMissing = (TextView) fileView.findViewById(R.id.fileMissing);
                     fileMissing.setText(mContext.getString(R.string.folder_missing));
                     fileMissing.setTextColor(mContext.getColor(R.color.primaryText_disabled));
-                    fileMissing.setLayoutParams(params);
+                    //fileMissing.setLayoutParams(params);
                 }
                 if (entity.getSize() == 1)
                     size.setText(String.format(
