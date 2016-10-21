@@ -87,75 +87,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         loadData(this);
         rootView = findViewById(android.R.id.content);
 
-        Connectivity.hasAccess(new Connectivity.onHasAccessResponse()
-        {
-            @Override
-            public void onConnectionCheckStart()
-            {
 
-            }
-
-            @Override
-            public void onConnectionAvailable(Long responseTime)
-            {
-                final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
-                {
-                    @Override
-                    public void onTaskStart()
-                    {
-
-                    }
-
-                    @Override
-                    public void onTaskEnd(final String version)
-                    {
-                        try
-                        {
-                            PackageManager manager = getApplicationContext().getPackageManager();
-                            PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
-                            if(version != null && UpdateDownloader.checkIfNew(version, info.versionName))
-                            {
-                                if(rootView != null)
-                                {
-                                    Snackbar snackbar = Snackbar
-                                            .make(rootView, getString(R.string.update_title), 7500)
-                                            .setAction(getString(R.string.download_notify_button), new View.OnClickListener()
-                                            {
-                                                @Override
-                                                public void onClick(View view)
-                                                {
-                                                    UpdateDownloader downloader = new UpdateDownloader(version);
-                                                    downloader.start(getApplicationContext());
-
-                                                    SharedPreferences.Editor downloadPrefsEditor = getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();
-                                                    downloadPrefsEditor.putLong(UpdateDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
-                                                    downloadPrefsEditor.putString(UpdateDownloader.DOWNLOAD_VERSION, version);
-                                                    downloadPrefsEditor.apply();
-                                                }
-                                            });
-
-                                    snackbar.show();
-                                }
-                                else
-                                {
-                                    Log.d("SettingsActivity", "Coordinator is null");
-                                }
-                            }
-                        }
-                        catch (PackageManager.NameNotFoundException e)
-                        {
-                        }
-                    }
-                });
-                manager.execute();
-            }
-
-            @Override
-            public void onConnectionUnavailable()
-            {
-
-            }
-        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

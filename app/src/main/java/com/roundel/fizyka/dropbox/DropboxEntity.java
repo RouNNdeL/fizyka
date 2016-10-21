@@ -105,6 +105,20 @@ public class DropboxEntity implements Serializable
         return null;
     }
 
+    @NonNull
+    public static List<DropboxEntity> getEntitiesByType(List<DropboxEntity> entities, int flag)
+    {
+        List<DropboxEntity> types = new ArrayList<>();
+        if(flag != DropboxEntity.TYPE_FILE && flag != DropboxEntity.TYPE_FOLDER)
+            throw new IllegalArgumentException("Type must be either TYPE_FOLDER or TYPE_FILE");
+        for( DropboxEntity entity : entities)
+        {
+            if(entity.getType() == flag)
+                types.add(entity);
+        }
+        return types;
+    }
+
     public static List<DropboxEntity> getNewEntities(List<DropboxEntity> entitiesOld, List<DropboxEntity> entitiesNew)
     {
         List<DropboxEntity> result = new ArrayList<DropboxEntity>();

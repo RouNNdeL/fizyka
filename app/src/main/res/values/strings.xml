@@ -5,6 +5,7 @@
     <string name="file_no_app">No app installed to handle that file type</string>
     <string name="missing_files">Some files may be missing, you might need to redownload</string>
     <string name="file_missing">(missing file)</string>
+    <string name="folder_missing">(missing folder)</string>
     <string name="class_changed_update">File update is required</string>
 
     <string name="file_item">%d item</string>

@@ -1,13 +1,16 @@
 package com.roundel.fizyka.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,9 +26,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.FileAdapter;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.dropbox.DropboxEntity;
+import com.roundel.fizyka.update.UpdateChecker;
+import com.roundel.fizyka.update.UpdateDownloader;
 
 import java.io.EOFException;
 import java.io.File;
@@ -46,8 +52,11 @@ public class FileExplorerActivity extends AppCompatActivity
     private static String currentPath = "/";
     private static String backPath = "/";
     private static List<DropboxEntity> mEntities = new ArrayList<DropboxEntity>();
-    private static ListView mListView;
-    private static LinearLayout mPathsContainer;
+
+    private  ListView mListView;
+    private  LinearLayout mPathsContainer;
+
+    private View rootView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -56,6 +65,77 @@ public class FileExplorerActivity extends AppCompatActivity
         setContentView(R.layout.file_explorer_activity);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         folderPath = preferences.getString("download_path", "");
+        rootView = findViewById(R.id.coordinatorLayoutFileExplorer);
+
+        Connectivity.hasAccess(new Connectivity.onHasAccessResponse()
+        {
+            @Override
+            public void onConnectionCheckStart()
+            {
+
+            }
+
+            @Override
+            public void onConnectionAvailable(Long responseTime)
+            {
+                final UpdateChecker manager = new UpdateChecker(new UpdateChecker.UpdateCheckerListener()
+                {
+                    @Override
+                    public void onTaskStart()
+                    {
+
+                    }
+
+                    @Override
+                    public void onTaskEnd(final String version)
+                    {
+                        try
+                        {
+                            PackageManager manager = getApplicationContext().getPackageManager();
+                            PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
+                            if(version != null && UpdateDownloader.checkIfNew(version, info.versionName))
+                            {
+                                if(rootView != null)
+                                {
+                                    Snackbar snackbar = Snackbar
+                                            .make(rootView, getString(R.string.update_title), 5000)
+                                            .setAction(getString(R.string.download_notify_button), new View.OnClickListener()
+                                            {
+                                                @Override
+                                                public void onClick(View view)
+                                                {
+                                                    UpdateDownloader downloader = new UpdateDownloader(version);
+                                                    downloader.start(getApplicationContext());
+
+                                                    SharedPreferences.Editor downloadPrefsEditor = getSharedPreferences("download_references", Context.MODE_PRIVATE).edit();
+                                                    downloadPrefsEditor.putLong(UpdateDownloader.DOWNLOAD_REFERENCE, downloader.getDownloadReference());
+                                                    downloadPrefsEditor.putString(UpdateDownloader.DOWNLOAD_VERSION, version);
+                                                    downloadPrefsEditor.apply();
+                                                }
+                                            });
+
+                                    snackbar.show();
+                                }
+                                else
+                                {
+                                    Log.d("FileExplorer", "Coordinator is null");
+                                }
+                            }
+                        }
+                        catch (PackageManager.NameNotFoundException e)
+                        {
+                        }
+                    }
+                });
+                manager.execute();
+            }
+
+            @Override
+            public void onConnectionUnavailable()
+            {
+
+            }
+        });
     }
 
     @Override
@@ -171,7 +251,7 @@ public class FileExplorerActivity extends AppCompatActivity
 
     private void updateListView(ListView listView, List<DropboxEntity> entities, String path)
     {
-        List<DropboxEntity> entitiesFromPath = new ArrayList<DropboxEntity>();
+        List<DropboxEntity> entitiesFromPath = new ArrayList<>();
         for (DropboxEntity entity : entities)
         {
             if(Objects.equals(entity.getParentDirectory(), path))
@@ -179,7 +259,9 @@ public class FileExplorerActivity extends AppCompatActivity
                 entitiesFromPath.add(entity);
             }
         }
-        FileAdapter adapter = new FileAdapter(this, R.layout.file_row, entitiesFromPath, folderPath);
+        FileAdapter adapter = new FileAdapter(this, R.layout.file_row,  folderPath);
+        adapter.addFolders(DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FOLDER));
+        adapter.addFiles(DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FILE));
         listView.setAdapter(adapter);
     }
 
