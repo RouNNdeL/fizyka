@@ -61,7 +61,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     public static Date mRecentUpdate;
     public static Date mNewRecentDate;
     public static boolean mExtract;
-    public static DateFormat mDropboxDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+    public static final DateFormat mDropboxDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
     public static String UNIX_BEGGING_DATE = "Thu, 01 Jan 1970 00:00:00 +0000";
     public static final String PREFERENCE_FRAGMENT_ID = "com.roundel.fizyka.FRAGMENT";

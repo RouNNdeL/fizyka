@@ -10,7 +10,7 @@
 
     <string name="file_item">%d item</string>
     <string name="file_item_plural">%d items</string>
-    <string name="file_byte">%1$,.2f bytes</string>
+    <string name="file_byte">%1$,.2f byte</string>
     <string name="file_byte_plural">%1$,.2f bytes</string>
     <string name="file_kilobyte" translatable="false">%1$,.2f kB</string>
     <string name="file_megabyte" translatable="false">%1$,.2f MB</string>

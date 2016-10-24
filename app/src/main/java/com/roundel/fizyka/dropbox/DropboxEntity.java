@@ -20,10 +20,14 @@ import java.util.zip.ZipEntry;
 
 public class DropboxEntity implements Serializable
 {
-    public static int TYPE_FILE = 0;
-    public static int TYPE_FOLDER = 1;
+    public final static int TYPE_FILE = 0;
+    public final static int TYPE_FOLDER = 1;
 
-    public static int BIG_NOTIFICATION_MAX_LINES = 7;
+    public final static int SORT_NAME = 10;
+    public final static int SORT_DATE = 11;
+    public final static int SORT_SIZE = 12;
+
+    public final static int FLAG_INVERSE = 20;
 
     private int type;
     private String path;
@@ -47,6 +51,86 @@ public class DropboxEntity implements Serializable
     public DropboxEntity(int type, @NonNull String path)
     {
         this(type, path, new Date());
+    }
+
+    private static final Comparator<DropboxEntity> COMPARATOR_NAME = new Comparator<DropboxEntity>()
+    {
+
+        @Override
+        public int compare(DropboxEntity entity1, DropboxEntity entity2)
+        {
+            return entity1.getName().compareTo(entity2.getName());
+        }
+    };
+
+    private static final Comparator<DropboxEntity> COMPARATOR_NAME_INVERSE = new Comparator<DropboxEntity>()
+    {
+
+        @Override
+        public int compare(DropboxEntity entity1, DropboxEntity entity2)
+        {
+            return entity2.getName().compareTo(entity1.getName());
+        }
+    };
+
+    private static final Comparator<DropboxEntity> COMPARATOR_DATE = new Comparator<DropboxEntity>()
+    {
+
+        @Override
+        public int compare(DropboxEntity entity1, DropboxEntity entity2)
+        {
+            return entity1.getDate().compareTo(entity2.getDate());
+        }
+    };
+
+    private static final Comparator<DropboxEntity> COMPARATOR_DATE_INVERSE = new Comparator<DropboxEntity>()
+    {
+
+        @Override
+        public int compare(DropboxEntity entity1, DropboxEntity entity2)
+        {
+            return entity2.getDate().compareTo(entity1.getDate());
+        }
+    };
+
+    private static final Comparator<DropboxEntity> COMPARATOR_SIZE = new Comparator<DropboxEntity>()
+    {
+
+        @Override
+        public int compare(DropboxEntity entity1, DropboxEntity entity2)
+        {
+            return (int) (entity1.getSize() - entity2.getSize());
+        }
+    };
+
+    private static final Comparator<DropboxEntity> COMPARATOR_SIZE_INVERSE = new Comparator<DropboxEntity>()
+    {
+
+        @Override
+        public int compare(DropboxEntity entity1, DropboxEntity entity2)
+        {
+            return (int) (entity2.getSize() - entity1.getSize());
+        }
+    };
+
+    public static List<DropboxEntity> sort(List<DropboxEntity> entities, int type, Integer... flags)
+    {
+        List<Integer> flagsList = Arrays.asList(flags);
+
+        if(type == DropboxEntity.SORT_NAME && !flagsList.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_NAME);
+        else if(type == DropboxEntity.SORT_NAME && flagsList.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_NAME_INVERSE);
+        else if(type == DropboxEntity.SORT_DATE && !flagsList.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_DATE);
+        else if(type == DropboxEntity.SORT_DATE && flagsList.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_DATE_INVERSE);
+        else if(type == DropboxEntity.SORT_SIZE && !flagsList.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_DATE);
+        else if(type == DropboxEntity.SORT_SIZE && flagsList.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_DATE_INVERSE);
+
+        return entities;
     }
 
     public static List<String> getPathsList(List<DropboxEntity> entities)
