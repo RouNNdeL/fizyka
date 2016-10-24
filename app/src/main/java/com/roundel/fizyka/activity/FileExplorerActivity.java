@@ -73,6 +73,7 @@ public class FileExplorerActivity extends AppCompatActivity
         folderPath = preferences.getString("download_path", "");
         sortingMode = preferences.getInt("sorting_mode", DropboxEntity.SORT_NAME);
         List<String> sortingFlagsString = Arrays.asList(preferences.getString("sorting_flags", "").split(";"));
+
         for(String s : sortingFlagsString){
             try
             {
@@ -243,11 +244,7 @@ public class FileExplorerActivity extends AppCompatActivity
         switch (item.getItemId())
         {
             case R.id.menu_sort:
-                final View menuItemView = findViewById(item.getItemId());
-                PopupMenu popup = new PopupMenu(FileExplorerActivity.this, menuItemView);
-                popup.getMenuInflater()
-                        .inflate(R.menu.file_explorer_sort, popup.getMenu());
-                popup.show();
+
                 return true;
             case R.id.menu_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -324,6 +321,7 @@ public class FileExplorerActivity extends AppCompatActivity
         textView.setTextColor(getColor(R.color.white));
         imageView.setVisibility(View.GONE);
     }
+
     private View addChild(final LinearLayout layout, String name, String path)
     {
         LinearLayout child = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.file_path_part, null);
@@ -343,5 +341,25 @@ public class FileExplorerActivity extends AppCompatActivity
         });
         layout.addView(child, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
         return child;
+    }
+
+    private void onShowSortMenu(MenuItem item)
+    {
+        final View menuItemView = findViewById(item.getItemId());
+        PopupMenu popup = new PopupMenu(FileExplorerActivity.this, menuItemView);
+        popup.getMenuInflater()
+                .inflate(R.menu.file_explorer_sort, popup.getMenu());
+        popup.show();
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                onSortMenuItemClicked(item);
+                return true;
+            }
+        });
+    }
+    private void onSortMenuItemClicked(MenuItem item)
+    {
+        item.setChecked(true);
     }
 }
