@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
@@ -36,8 +35,6 @@ import com.roundel.fizyka.dropbox.DropboxMetadata;
 import com.roundel.fizyka.dropbox.NotificationEventReceiver;
 import com.roundel.fizyka.R;
 import com.roundel.fizyka.RestartDialogFragment;
-import com.roundel.fizyka.update.UpdateChecker;
-import com.roundel.fizyka.update.UpdateDownloader;
 
 import java.io.EOFException;
 import java.io.File;
@@ -350,7 +347,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_button_layout, null);
 
-        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.rotation_animation);
+        Animation rotation = AnimationUtils.loadAnimation(this, R.anim.refresh_rotation_animation);
         rotation.setRepeatCount(Animation.INFINITE);
         iv.startAnimation(rotation);
 

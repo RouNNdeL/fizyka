@@ -19,6 +19,7 @@ public class DropboxEntity implements Serializable
 {
     public final static int TYPE_FILE = 0;
     public final static int TYPE_FOLDER = 1;
+    public final static int TYPE_HEADER = 2; //For usage in ListView only
 
     public final static int SORT_NAME = 10;
     public final static int SORT_DATE = 11;
@@ -373,12 +374,12 @@ public class DropboxEntity implements Serializable
     //Setters
     public void setType(int type)
     {
-        if (Objects.equals(type, TYPE_FILE) || Objects.equals(type, TYPE_FOLDER))
+        if (Objects.equals(type, TYPE_FILE) || Objects.equals(type, TYPE_FOLDER) || Objects.equals(type, TYPE_HEADER))
         {
             this.type = type;
         } else
         {
-            throw new IllegalArgumentException("Type must be either TYPE_FOLDER or TYPE_FILE");
+            throw new IllegalArgumentException("Type must be one of TYPE_FOLDER, TYPE_FILE or TYPE_HEADER");
         }
     }
     public void setPath(String path)

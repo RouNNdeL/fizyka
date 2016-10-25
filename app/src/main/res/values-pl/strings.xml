@@ -101,4 +101,6 @@
     <string name="sorting_mode_date">Daty przesłania</string>
     <string name="sorting_mode_size">Rozmiaru</string>
     <string name="file_corrupted">(uszkodzony plik)</string>
+    <string name="file_type_file">Pliki</string>
+    <string name="file_type_folder">Foldery</string>
 </resources>

@@ -9,6 +9,9 @@
     <string name="folder_missing">(missing folder)</string>
     <string name="class_changed_update">File update is required</string>
 
+    <string name="file_type_folder">Folders</string>
+    <string name="file_type_file">Files</string>
+
     <string name="file_item">%d item</string>
     <string name="file_item_plural">%d items</string>
     <string name="file_byte">%1$,.2f byte</string>

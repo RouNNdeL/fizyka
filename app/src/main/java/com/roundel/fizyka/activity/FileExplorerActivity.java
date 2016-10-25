@@ -181,7 +181,7 @@ public class FileExplorerActivity extends AppCompatActivity
                 Toast.makeText(FileExplorerActivity.this, getString(R.string.missing_files), Toast.LENGTH_LONG).show();
             }
 
-            updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags);
+            updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags, false);
             updatePathContainer(mPathsContainer, currentPath);
 
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -196,10 +196,10 @@ public class FileExplorerActivity extends AppCompatActivity
                         currentPath = clickedItem.getPath()+"/";
                         backPath = clickedItem.getParentDirectory();
                         String test = clickedItem.getPath();
-                        updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags);
+                        updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags, false);
                         updatePathContainer(mPathsContainer, currentPath);
                     }
-                    else
+                    else if(clickedItem.getType() == DropboxEntity.TYPE_FOLDER)
                     {
                         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath+clickedItem.getPath());
                         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -273,14 +273,14 @@ public class FileExplorerActivity extends AppCompatActivity
         if(Objects.equals(currentPath, "/")) super.onBackPressed();
         else
         {
-            updateListView(mListView, mEntities, backPath, sortingMode, sortingFlags);
+            updateListView(mListView, mEntities, backPath, sortingMode, sortingFlags, false);
             updatePathContainer(mPathsContainer, backPath);
             currentPath = backPath;
             backPath = DropboxEntity.getParentDirectoryFromString(currentPath);
         }
     }
 
-    private void updateListView(ListView listView, List<DropboxEntity> entities, String path, int sortingMode, List<Integer> flags)
+    private void updateListView(final ListView listView, List<DropboxEntity> entities, String path, final int sortingMode, List<Integer> flags, boolean animateArrow)
     {
         List<DropboxEntity> entitiesFromPath = new ArrayList<>();
         for (DropboxEntity entity : entities)
@@ -290,7 +290,26 @@ public class FileExplorerActivity extends AppCompatActivity
                 entitiesFromPath.add(entity);
             }
         }
-        FileAdapter adapter = new FileAdapter(this, R.layout.file_row,  folderPath);
+        FileAdapter adapter = new FileAdapter(this,
+                R.layout.file_row, folderPath,
+                !sortingFlags.contains(DropboxEntity.FLAG_INVERSE),
+                animateArrow,
+                sortingMode,
+                new FileAdapter.OnSortArrowClickListener()
+                {
+                    @Override
+                    public void onClick(View view) {
+                        if(sortingFlags.contains(DropboxEntity.FLAG_INVERSE))
+                        {
+                            sortingFlags.remove((Integer) DropboxEntity.FLAG_INVERSE);
+                        }
+                        else
+                        {
+                            sortingFlags.add(DropboxEntity.FLAG_INVERSE);
+                        }
+                        updateListView(listView, mEntities, currentPath, sortingMode, sortingFlags, true);
+                    }
+        });
 
         List<DropboxEntity> folders = DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FOLDER);
         List<DropboxEntity> files = DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FILE);
@@ -336,8 +355,10 @@ public class FileExplorerActivity extends AppCompatActivity
             public void onClick(View view)
             {
                 String path = view.getTag(R.id.path_key).toString();
-                updateListView(mListView, mEntities, path, sortingMode, sortingFlags);
+                updateListView(mListView, mEntities, path, sortingMode, sortingFlags, false);
                 updatePathContainer(layout, path);
+                currentPath = path;
+                backPath = DropboxEntity.getParentDirectoryFromString(currentPath);
             }
         });
         layout.addView(child, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -360,7 +381,7 @@ public class FileExplorerActivity extends AppCompatActivity
             public void onClick(int mode) {
                 sortingMode = mode;
                 dialog.dismiss();
-                updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags);
+                updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags, false);
             }
         });
         dialog.show(getSupportFragmentManager(), "SortChoosingDialog");

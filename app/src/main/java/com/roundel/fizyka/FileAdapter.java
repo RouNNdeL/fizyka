@@ -5,11 +5,13 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.ArrayAdapter;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ import java.util.Locale;
 public class FileAdapter extends BaseAdapter
 {
     private List<DropboxEntity> mList = new ArrayList<>();
+
     private Context mContext;
 
     private List<String> MIME_TYPE_PDF = new ArrayList<String>(Arrays.asList(new String[]{
@@ -53,20 +56,33 @@ public class FileAdapter extends BaseAdapter
     private int mResource;
     private String folderPath;
     private DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault());
+    private boolean isArrowSet = false;
+    private OnSortArrowClickListener listener;
+    private boolean animateArrow;
+    private boolean rotateArrow;
+    private int sortingMode;
 
-    public FileAdapter(Context context, int resource, String folder) {
+    public FileAdapter(Context context, int resource, String folder, boolean rotateArrow, boolean animateArrow, int sortingMode, OnSortArrowClickListener listener) {
         this.mContext = context;
         this.mResource = resource;
         this.folderPath = folder;
+        this.listener = listener;
+        this.animateArrow = animateArrow;
+        this.sortingMode = sortingMode;
+        this.rotateArrow = rotateArrow;
     }
 
     public void addFiles(List<DropboxEntity> entities)
     {
+        if(entities.size() > 0)
+            mList.add(new DropboxEntity(DropboxEntity.TYPE_HEADER, mContext.getString(R.string.file_type_file)));
         mList.addAll(entities);
     }
 
     public void addFolders(List<DropboxEntity> entities)
     {
+        if(entities.size() > 0)
+            mList.add(new DropboxEntity(DropboxEntity.TYPE_HEADER, mContext.getString(R.string.file_type_folder)));
         mList.addAll(entities);
     }
 
@@ -94,16 +110,20 @@ public class FileAdapter extends BaseAdapter
     {
         View fileView = convertView;
 
-        if(fileView == null)
+        DropboxEntity entity = getItem(position);
+
+        if(fileView == null && entity.getType() != DropboxEntity.TYPE_HEADER)
         {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             fileView = inflater.inflate(mResource, null);
         }
+        else if(fileView == null)
+        {
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            fileView = inflater.inflate(R.layout.file_header, null);
+        }
 
-        DropboxEntity entity = getItem(position);
-
-
-        if (entity != null)
+        if (entity != null && entity.getType() != DropboxEntity.TYPE_HEADER)
         {
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath + entity.getPath());
             boolean fileExists = file.exists();
@@ -160,7 +180,8 @@ public class FileAdapter extends BaseAdapter
                     else
                         icon.setColorFilter(mContext.getColor(R.color.textBlue_disabled), PorterDuff.Mode.MULTIPLY);
                 }
-            } else
+            }
+            else
             {
                 if (!fileView.isEnabled())
                 {
@@ -211,8 +232,62 @@ public class FileAdapter extends BaseAdapter
             else
                 size.setTextColor(mContext.getColor(R.color.secondaryText_disabled));
         }
+        else if(entity != null)
+        {
+            TextView type = (TextView) fileView.findViewById(R.id.file_header_type);
+            final ImageView arrow = (ImageView) fileView.findViewById(R.id.file_header_arrow);
+            TextView mode = (TextView) fileView.findViewById(R.id.file_header_mode);
+
+            type.setText(entity.getPath());
+
+            if(isArrowSet)
+            {
+                arrow.setVisibility(View.GONE);
+            }
+            else
+            {
+                arrow.setVisibility(View.VISIBLE);
+                mode.setText(DropboxEntity.getLocalizedSortingName(mContext, sortingMode));
+                mode.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onClick(arrow);
+                    }
+                });
+                arrow.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        listener.onClick(arrow);
+                    }
+                });
+                isArrowSet = true;
+            }
+
+            if(rotateArrow)
+                arrow.setRotation(180f);
+            else
+                arrow.setRotation(0f);
+
+            if(animateArrow)
+            {
+                arrow.clearAnimation();
+                RotateAnimation rotation;
+                if(arrow.getRotation()%360f > 180)
+                    rotation = (RotateAnimation) AnimationUtils.loadAnimation(mContext, R.anim.arrow_rotation_animation);
+                else
+                    rotation = (RotateAnimation) AnimationUtils.loadAnimation(mContext, R.anim.arrow_rotation_animation_reversed);
+                rotation.setFillEnabled(true);
+                rotation.setFillAfter(true);
+                arrow.setAnimation(rotation);
+            }
+        }
 
 
         return fileView;
+    }
+
+    public interface OnSortArrowClickListener
+    {
+        void onClick(View view);
     }
 }

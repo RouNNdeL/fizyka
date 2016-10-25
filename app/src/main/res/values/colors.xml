@@ -3,7 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF9800</color>
-    <color name="lightGrey">#e0e0e0</color>
+    <color name="lightGrey">#eeeeee</color>
 
     <color name="pdfRed">#e53935</color>
     <color name="textBlue">#3d5afe</color>
