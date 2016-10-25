@@ -74,6 +74,7 @@ public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastR
                         throw new ZipException("File is encrypted");
                     }
                     zipFile.extractAll(destination);
+                    Log.d("Zip", "Extracted successfully");
                 } catch (ZipException e) {
                     e.printStackTrace();
                 }

@@ -5,6 +5,7 @@
     <string name="file_no_app">No app installed to handle that file type</string>
     <string name="missing_files">Some files may be missing, you might need to redownload</string>
     <string name="file_missing">(missing file)</string>
+    <string name="file_corrupted">(corrupted file)</string>
     <string name="folder_missing">(missing folder)</string>
     <string name="class_changed_update">File update is required</string>
 
@@ -18,6 +19,12 @@
     <string name="file_terabyte" translatable="false">%1$,.2f TB</string>
     <string name="file_petabyte" translatable="false">%1$,.2f PT</string>
     <string name="file_exabyte" translatable="false">%1$,.2f EB</string>
+
+    <string name="sort_title">Sort by</string>
+    <string name="sorting_mode_name">Name</string>
+    <string name="sorting_mode_date">Upload date</string>
+    <string name="sorting_mode_size">Size</string>
+
 
     <!--Settings activity-->
     <string name="activity_name_settings">Settings</string>

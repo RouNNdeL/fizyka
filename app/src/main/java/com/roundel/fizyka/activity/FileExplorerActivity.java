@@ -1,5 +1,6 @@
 package com.roundel.fizyka.activity;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.PopupMenu;
+import android.support.v7.app.AppCompatDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.FileAdapter;
 import com.roundel.fizyka.R;
+import com.roundel.fizyka.RadioDialog;
 import com.roundel.fizyka.dropbox.DropboxEntity;
 import com.roundel.fizyka.update.UpdateChecker;
 import com.roundel.fizyka.update.UpdateDownloader;
@@ -40,9 +42,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,6 +64,7 @@ public class FileExplorerActivity extends AppCompatActivity
     private List<Integer> sortingFlags = new ArrayList<>();
 
     private View rootView;
+    private int checkedSortingItemId = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -164,6 +167,10 @@ public class FileExplorerActivity extends AppCompatActivity
         super.onResume();
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         folderPath = preferences.getString("download_path", "");
+
+        mListView = (ListView) findViewById(R.id.fileListView);
+        mPathsContainer = (LinearLayout) findViewById(R.id.currentPathContainer);
+
         try
         {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir()+"/dropbox_entities.dat"));
@@ -173,9 +180,6 @@ public class FileExplorerActivity extends AppCompatActivity
             {
                 Toast.makeText(FileExplorerActivity.this, getString(R.string.missing_files), Toast.LENGTH_LONG).show();
             }
-
-            mListView = (ListView) findViewById(R.id.fileListView);
-            mPathsContainer = (LinearLayout) findViewById(R.id.currentPathContainer);
 
             updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags);
             updatePathContainer(mPathsContainer, currentPath);
@@ -244,22 +248,19 @@ public class FileExplorerActivity extends AppCompatActivity
         switch (item.getItemId())
         {
             case R.id.menu_sort:
-
+                onShowSortDialog();
                 return true;
+
             case R.id.menu_settings:
                 Intent intent = new Intent(this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
+
             case R.id.menu_about:
                 Intent intent1 = new Intent(this, AboutActivity.class);
                 startActivity(intent1);
                 return true;
 
-            //Sorting
-            case R.id.sortName:
-                Log.d("SortMenu", "sortName");
-                item.setChecked(true);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -294,8 +295,8 @@ public class FileExplorerActivity extends AppCompatActivity
         List<DropboxEntity> folders = DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FOLDER);
         List<DropboxEntity> files = DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FILE);
 
-        folders = DropboxEntity.sort(folders, sortingMode, ((Integer[]) flags.toArray()));
-        files = DropboxEntity.sort(files, sortingMode, ((Integer[]) flags.toArray()));
+        folders = DropboxEntity.sort(folders, sortingMode, flags);
+        files = DropboxEntity.sort(files, sortingMode, flags);
 
         adapter.addFolders(folders);
         adapter.addFiles(files);
@@ -343,23 +344,25 @@ public class FileExplorerActivity extends AppCompatActivity
         return child;
     }
 
-    private void onShowSortMenu(MenuItem item)
+    private void onShowSortDialog()
     {
-        final View menuItemView = findViewById(item.getItemId());
-        PopupMenu popup = new PopupMenu(FileExplorerActivity.this, menuItemView);
-        popup.getMenuInflater()
-                .inflate(R.menu.file_explorer_sort, popup.getMenu());
-        popup.show();
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+        List<Integer> sortingModes = new ArrayList<>(Arrays.asList(new Integer[]{
+                DropboxEntity.SORT_NAME,
+                DropboxEntity.SORT_DATE,
+                DropboxEntity.SORT_SIZE
+        }));
+        final RadioDialog dialog = new RadioDialog();
+        dialog.setTitle(getString(R.string.sort_title));
+        dialog.setContent(sortingModes);
+        dialog.setChecked(sortingMode);
+        dialog.addOnItemClickListener(new RadioDialog.OnItemClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                onSortMenuItemClicked(item);
-                return true;
+            public void onClick(int mode) {
+                sortingMode = mode;
+                dialog.dismiss();
+                updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags);
             }
         });
-    }
-    private void onSortMenuItemClicked(MenuItem item)
-    {
-        item.setChecked(true);
+        dialog.show(getSupportFragmentManager(), "SortChoosingDialog");
     }
 }

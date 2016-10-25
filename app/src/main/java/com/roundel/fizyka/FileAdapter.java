@@ -106,7 +106,9 @@ public class FileAdapter extends BaseAdapter
         if (entity != null)
         {
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath + entity.getPath());
-            fileView.setEnabled(file.exists());
+            boolean fileExists = file.exists();
+            boolean fileSizeMatch = file.length() == entity.getSize();
+            fileView.setEnabled((fileSizeMatch || file.isDirectory()) && fileExists);
 
             ImageView imageView = (ImageView) fileView.findViewById(R.id.fileIcon);
             Drawable icon;
@@ -114,22 +116,19 @@ public class FileAdapter extends BaseAdapter
             if (entity.getType() == DropboxEntity.TYPE_FILE)
             {
                 size.setText(DropboxEntity.formatSize(entity.getSize(), mContext));
-                //ImageView iconBg = (ImageView) fileView.findViewById(R.id.fileIconBg);
-                //iconBg.setColorFilter(mContext.getColor(android.R.color.white), PorterDuff.Mode.CLEAR);
                 imageView.setScaleX(0.9f);
                 imageView.setScaleY(0.9f);
 
                 if (!fileView.isEnabled())
                 {
-                    //LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-                    //params.weight = 2.5f;
-
                     TextView fileMissing = (TextView) fileView.findViewById(R.id.fileMissing);
-                    fileMissing.setText(mContext.getString(R.string.file_missing));
+                    if(!fileExists)
+                        fileMissing.setText(mContext.getString(R.string.file_missing));
+                    else if(!fileSizeMatch)
+                        fileMissing.setText(mContext.getString(R.string.file_corrupted));
                     fileMissing.setTextColor(mContext.getColor(R.color.primaryText_disabled));
-                    //fileMissing.setLayoutParams(params);
 
-                    fileView.setClickable(!file.exists());
+                    fileView.setClickable(!fileView.isEnabled());
                 }
 
                 if (MIME_TYPE_PDF.contains(entity.getMimeType()))

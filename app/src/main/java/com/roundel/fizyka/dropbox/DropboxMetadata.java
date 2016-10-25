@@ -30,7 +30,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
 {
     private final String TAG = "DropboxTask";
 
-    public List<DropboxEntity> entities = new ArrayList<DropboxEntity>();
+    private List<DropboxEntity> entities = new ArrayList<DropboxEntity>();
 
     private DropboxMetadataListener listener = null;
     private DateFormat dateFormat;

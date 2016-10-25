@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/app_bar_search"
+        android:actionViewClass="android.support.v7.widget.SearchView"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:title="Search" />
     <group android:checkableBehavior="single">
         <item android:id="@+id/sortName"
-              android:title="Name A→Z" />
-        <item android:id="@+id/sortNameInverse"
-              android:title="Name Z→A" />
+              android:title="Name" />
+        <item android:id="@+id/sortDate"
+            android:title="Date" />
+        <item android:id="@+id/sortSize"
+            android:title="Size" />
     </group>
 </menu>

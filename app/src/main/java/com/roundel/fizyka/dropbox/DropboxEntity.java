@@ -8,15 +8,12 @@ import java.io.Serializable;
 import java.util.*;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.*;
 
 import com.roundel.fizyka.R;
 
 import java.io.*;
-import java.util.zip.ZipEntry;
 
 public class DropboxEntity implements Serializable
 {
@@ -113,24 +110,38 @@ public class DropboxEntity implements Serializable
         }
     };
 
-    public static List<DropboxEntity> sort(List<DropboxEntity> entities, int type, Integer... flags)
+    public static List<DropboxEntity> sort(List<DropboxEntity> entities, int type, List<Integer> flags)
     {
-        List<Integer> flagsList = Arrays.asList(flags);
-
-        if(type == DropboxEntity.SORT_NAME && !flagsList.contains(DropboxEntity.FLAG_INVERSE))
+        if(type == DropboxEntity.SORT_NAME && !flags.contains(DropboxEntity.FLAG_INVERSE))
             Collections.sort(entities, DropboxEntity.COMPARATOR_NAME);
-        else if(type == DropboxEntity.SORT_NAME && flagsList.contains(DropboxEntity.FLAG_INVERSE))
+        else if(type == DropboxEntity.SORT_NAME && flags.contains(DropboxEntity.FLAG_INVERSE))
             Collections.sort(entities, DropboxEntity.COMPARATOR_NAME_INVERSE);
-        else if(type == DropboxEntity.SORT_DATE && !flagsList.contains(DropboxEntity.FLAG_INVERSE))
+        else if(type == DropboxEntity.SORT_DATE && !flags.contains(DropboxEntity.FLAG_INVERSE))
             Collections.sort(entities, DropboxEntity.COMPARATOR_DATE);
-        else if(type == DropboxEntity.SORT_DATE && flagsList.contains(DropboxEntity.FLAG_INVERSE))
+        else if(type == DropboxEntity.SORT_DATE && flags.contains(DropboxEntity.FLAG_INVERSE))
             Collections.sort(entities, DropboxEntity.COMPARATOR_DATE_INVERSE);
-        else if(type == DropboxEntity.SORT_SIZE && !flagsList.contains(DropboxEntity.FLAG_INVERSE))
-            Collections.sort(entities, DropboxEntity.COMPARATOR_DATE);
-        else if(type == DropboxEntity.SORT_SIZE && flagsList.contains(DropboxEntity.FLAG_INVERSE))
-            Collections.sort(entities, DropboxEntity.COMPARATOR_DATE_INVERSE);
+        else if(type == DropboxEntity.SORT_SIZE && !flags.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_SIZE);
+        else if(type == DropboxEntity.SORT_SIZE && flags.contains(DropboxEntity.FLAG_INVERSE))
+            Collections.sort(entities, DropboxEntity.COMPARATOR_SIZE_INVERSE);
 
         return entities;
+    }
+
+    @Nullable
+    public static String getLocalizedSortingName(Context context, int mode)
+    {
+        switch(mode)
+        {
+            case DropboxEntity.SORT_NAME:
+                return context.getString(R.string.sorting_mode_name);
+            case DropboxEntity.SORT_DATE:
+                return context.getString(R.string.sorting_mode_date);
+            case DropboxEntity.SORT_SIZE:
+                return context.getString(R.string.sorting_mode_size);
+            default:
+                return null;
+        }
     }
 
     public static List<String> getPathsList(List<DropboxEntity> entities)

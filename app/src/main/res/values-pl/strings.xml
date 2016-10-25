@@ -96,4 +96,9 @@
     <string name="file_missing">(brakujący plik)</string>
     <string name="missing_files">Niektóre pliki mogą nie istnieć, ponowne pobranie możę być potrzebne</string>
     <string name="folder_missing">(brakujący folder)</string>
+    <string name="sort_title">Sortuj wedlug</string>
+    <string name="sorting_mode_name">Nazwy</string>
+    <string name="sorting_mode_date">Daty przesłania</string>
+    <string name="sorting_mode_size">Rozmiaru</string>
+    <string name="file_corrupted">(uszkodzony plik)</string>
 </resources>
