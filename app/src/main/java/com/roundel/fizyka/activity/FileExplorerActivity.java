@@ -199,7 +199,7 @@ public class FileExplorerActivity extends AppCompatActivity
                         updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags, false);
                         updatePathContainer(mPathsContainer, currentPath);
                     }
-                    else if(clickedItem.getType() == DropboxEntity.TYPE_FOLDER)
+                    else if(clickedItem.getType() == DropboxEntity.TYPE_FILE)
                     {
                         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath+clickedItem.getPath());
                         Intent intent = new Intent(Intent.ACTION_VIEW);
