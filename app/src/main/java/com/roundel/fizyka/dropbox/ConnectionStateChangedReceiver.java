@@ -14,7 +14,8 @@ import android.util.Log;
  */
 public class ConnectionStateChangedReceiver extends WakefulBroadcastReceiver
 {
-    public final  String TAG = "CONNECTION";
+    public final String TAG = "CONNECTION";
+
     @Override
     public void onReceive(Context context, Intent intent)
     {

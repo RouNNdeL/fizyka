@@ -1,19 +1,24 @@
 package com.roundel.fizyka.dropbox;
 
-import java.io.Serializable;
-
-/**
- * Created by RouNdeL on 2016-10-14.
- */
-import java.util.*;
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.roundel.fizyka.R;
 
-import java.io.*;
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+/**
+ * Created by RouNdeL on 2016-10-14.
+ */
 
 public class DropboxEntity implements Serializable
 {
@@ -42,10 +47,12 @@ public class DropboxEntity implements Serializable
         this.mimeType = mimeType;
         this.size = size;
     }
+
     public DropboxEntity(int type, @NonNull String path, @NonNull Date date)
     {
         this(type, path, 0, null, date);
     }
+
     public DropboxEntity(int type, @NonNull String path)
     {
         this(type, path, new Date());
@@ -148,34 +155,37 @@ public class DropboxEntity implements Serializable
     public static List<String> getPathsList(List<DropboxEntity> entities)
     {
         List<String> result = new ArrayList<String>();
-        for (DropboxEntity entity : entities)
+        for(DropboxEntity entity : entities)
         {
             result.add(entity.getPath());
         }
         return result;
     }
+
     public static List<Date> getDatesList(List<DropboxEntity> entities)
     {
         List<Date> result = new ArrayList<Date>();
-        for (DropboxEntity entity : entities)
+        for(DropboxEntity entity : entities)
         {
             result.add(entity.getDate());
         }
         return result;
     }
+
     public static List<String> getMimeTypesList(List<DropboxEntity> entities)
     {
         List<String> result = new ArrayList<String>();
-        for (DropboxEntity entity : entities)
+        for(DropboxEntity entity : entities)
         {
             result.add(entity.getMimeType());
         }
         return result;
     }
+
     public static List<Integer> getTypesList(List<DropboxEntity> entities)
     {
         List<Integer> result = new ArrayList<Integer>();
-        for (DropboxEntity entity : entities)
+        for(DropboxEntity entity : entities)
         {
             result.add(entity.getType());
         }
@@ -191,6 +201,7 @@ public class DropboxEntity implements Serializable
         }
         return null;
     }
+
     @Nullable
     public static DropboxEntity findByDate(Date date, List<DropboxEntity> entities)
     {
@@ -207,7 +218,7 @@ public class DropboxEntity implements Serializable
         List<DropboxEntity> types = new ArrayList<>();
         if(flag != DropboxEntity.TYPE_FILE && flag != DropboxEntity.TYPE_FOLDER)
             throw new IllegalArgumentException("Type must be either TYPE_FOLDER or TYPE_FILE");
-        for( DropboxEntity entity : entities)
+        for(DropboxEntity entity : entities)
         {
             if(entity.getType() == flag)
                 types.add(entity);
@@ -220,24 +231,24 @@ public class DropboxEntity implements Serializable
         List<DropboxEntity> result = new ArrayList<DropboxEntity>();
         List<String> pathsNew = getPathsList(entitiesNew);
         List<String> pathsOld = getPathsList(entitiesOld);
-        for (String path : pathsNew)
+        for(String path : pathsNew)
         {
-            if(! pathsOld.contains(path)) result.add(findByPath(path, entitiesNew));
+            if(!pathsOld.contains(path)) result.add(findByPath(path, entitiesNew));
         }
         return result;
     }
 
     public String toString()
     {
-        return "type: "+Integer.toString(this.getType())+" path: "+this.getPath()+" mime: "+this.getMimeType();
+        return "type: " + Integer.toString(this.getType()) + " path: " + this.getPath() + " mime: " + this.getMimeType();
     }
 
     public static String listToString(List<DropboxEntity> entities)
     {
-        String result  = "";
+        String result = "";
         for(DropboxEntity entity : entities)
         {
-            result+=entity.toString()+"\n";
+            result += entity.toString() + "\n";
         }
         return result;
     }
@@ -250,14 +261,14 @@ public class DropboxEntity implements Serializable
             if(entity.getType() == DropboxEntity.TYPE_FILE)
             {
                 String[] parts = entity.getPath().split("/");
-                if(Objects.equals(parts[parts.length-2], ""))result+="• "+
-                        parts[parts.length-1]+
-                        " "+context.getString(R.string.notify_changelog_in)+
-                        " "+context.getString(R.string.notify_changelog_root)+"\n";
-                else result+="• "+
-                        parts[parts.length-1]+
-                        " "+context.getString(R.string.notify_changelog_in)+
-                        " "+parts[parts.length-2]+"\n";
+                if(Objects.equals(parts[parts.length - 2], "")) result += "• " +
+                        parts[parts.length - 1] +
+                        " " + context.getString(R.string.notify_changelog_in) +
+                        " " + context.getString(R.string.notify_changelog_root) + "\n";
+                else result += "• " +
+                        parts[parts.length - 1] +
+                        " " + context.getString(R.string.notify_changelog_in) +
+                        " " + parts[parts.length - 2] + "\n";
             }
         }
         return result;
@@ -266,11 +277,11 @@ public class DropboxEntity implements Serializable
     public static String formatSize(long longSize, Context context)
     {
         final double SIZE_KILO = 1024;
-        final double SIZE_MEGA = SIZE_KILO*SIZE_KILO;
-        final double SIZE_GIGA = SIZE_MEGA*SIZE_KILO;
-        final double SIZE_TERA = SIZE_GIGA*SIZE_KILO;
-        final double SIZE_PETA = SIZE_TERA*SIZE_KILO;
-        final double SIZE_EXA = SIZE_MEGA*SIZE_KILO;
+        final double SIZE_MEGA = SIZE_KILO * SIZE_KILO;
+        final double SIZE_GIGA = SIZE_MEGA * SIZE_KILO;
+        final double SIZE_TERA = SIZE_GIGA * SIZE_KILO;
+        final double SIZE_PETA = SIZE_TERA * SIZE_KILO;
+        final double SIZE_EXA = SIZE_MEGA * SIZE_KILO;
         final double size = (double) longSize;
         if(size < SIZE_KILO)
             if(size == 1)
@@ -284,27 +295,27 @@ public class DropboxEntity implements Serializable
         else if(size < SIZE_MEGA)
             return String.format(Locale.getDefault(),
                     context.getString(R.string.file_kilobyte),
-                    size/SIZE_KILO);
+                    size / SIZE_KILO);
         else if(size < SIZE_GIGA)
             return String.format(Locale.getDefault(),
                     context.getString(R.string.file_megabyte),
-                    size/SIZE_MEGA);
+                    size / SIZE_MEGA);
         else if(size < SIZE_TERA)
             return String.format(Locale.getDefault(),
                     context.getString(R.string.file_gigabyte),
-                    size/SIZE_GIGA);
+                    size / SIZE_GIGA);
         else if(size < SIZE_PETA)
             return String.format(Locale.getDefault(),
                     context.getString(R.string.file_terabyte),
-                    size/SIZE_TERA);
+                    size / SIZE_TERA);
         else if(size < SIZE_EXA)
             return String.format(Locale.getDefault(),
                     context.getString(R.string.file_petabyte),
-                    size/SIZE_PETA);
+                    size / SIZE_PETA);
         else
             return String.format(Locale.getDefault(),
                     context.getString(R.string.file_exabyte),
-                    size/SIZE_EXA);
+                    size / SIZE_EXA);
     }
 
     //Getters
@@ -312,18 +323,22 @@ public class DropboxEntity implements Serializable
     {
         return this.type;
     }
+
     public String getPath()
     {
         return this.path;
     }
+
     public Date getDate()
     {
         return this.date;
     }
+
     public long getSize()
     {
         return this.size;
     }
+
     public String getMimeType()
     {
         return mimeType;
@@ -332,34 +347,34 @@ public class DropboxEntity implements Serializable
     public String getName()
     {
         String[] arr = this.path.split("/");
-        return Objects.equals(this.path, "/") ?null:arr[arr.length-1];
+        return Objects.equals(this.path, "/") ? null : arr[arr.length - 1];
     }
 
     public String getParentDirectory()
     {
         if(this.getName() == null) return null;
-        return this.path.substring(0, this.path.length()-this.getName().length());
+        return this.path.substring(0, this.path.length() - this.getName().length());
     }
 
     @Nullable
     public static String getNameFromString(String path)
     {
         String[] arr = path.split("/");
-        return Objects.equals(path, "/") ?null:arr[arr.length-1];
+        return Objects.equals(path, "/") ? null : arr[arr.length - 1];
     }
 
     @Nullable
     public static String getParentDirectoryFromString(String path)
     {
         if(DropboxEntity.getNameFromString(path) == null) return null;
-        int add = path.charAt(path.length()-1) == '/'?-1:0;
-        return path.substring(0, path.length()-DropboxEntity.getNameFromString(path).length()+add);
+        int add = path.charAt(path.length() - 1) == '/' ? -1 : 0;
+        return path.substring(0, path.length() - DropboxEntity.getNameFromString(path).length() + add);
     }
 
     public boolean fileExists(String rootPath)
     {
-        if(!Objects.equals(rootPath.charAt(rootPath.length()-1), '/')) rootPath+="/";
-        return new File(rootPath+this.getPath()).exists();
+        if(!Objects.equals(rootPath.charAt(rootPath.length() - 1), '/')) rootPath += "/";
+        return new File(rootPath + this.getPath()).exists();
     }
 
     public static boolean filesExist(List<DropboxEntity> entities, String rootPath)
@@ -374,26 +389,31 @@ public class DropboxEntity implements Serializable
     //Setters
     public void setType(int type)
     {
-        if (Objects.equals(type, TYPE_FILE) || Objects.equals(type, TYPE_FOLDER) || Objects.equals(type, TYPE_HEADER))
+        if(Objects.equals(type, TYPE_FILE) || Objects.equals(type, TYPE_FOLDER) || Objects.equals(type, TYPE_HEADER))
         {
             this.type = type;
-        } else
+        }
+        else
         {
             throw new IllegalArgumentException("Type must be one of TYPE_FOLDER, TYPE_FILE or TYPE_HEADER");
         }
     }
+
     public void setPath(String path)
     {
         this.path = path;
     }
+
     public void setDate(Date date)
     {
         this.date = date;
     }
+
     public void setSize(long size)
     {
         this.size = size;
     }
+
     public void setMimeType(String mimeType)
     {
         this.mimeType = mimeType;

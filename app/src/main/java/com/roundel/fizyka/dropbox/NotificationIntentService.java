@@ -38,48 +38,61 @@ public class NotificationIntentService extends IntentService
     private static final String ACTION_DELETE = "ACTION_DELETE";
     private Date mRecentUpdate;
 
-    public NotificationIntentService() {
+    public NotificationIntentService()
+    {
         super(NotificationIntentService.class.getSimpleName());
     }
 
-    public static Intent createIntentStartNotificationService(Context context) {
+    public static Intent createIntentStartNotificationService(Context context)
+    {
         Intent intent = new Intent(context, NotificationIntentService.class);
         intent.setAction(ACTION_START);
         return intent;
     }
 
-    public static Intent createIntentDeleteNotification(Context context) {
+    public static Intent createIntentDeleteNotification(Context context)
+    {
         Intent intent = new Intent(context, NotificationIntentService.class);
         intent.setAction(ACTION_DELETE);
         return intent;
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent intent)
+    {
         Log.d(getClass().getSimpleName(), "onHandleIntent, started handling a notification event");
-        try {
+        try
+        {
             String action = intent.getAction();
-            if (ACTION_START.equals(action)) {
+            if(ACTION_START.equals(action))
+            {
                 processStartNotification();
             }
-            if (ACTION_DELETE.equals(action)) {
+            if(ACTION_DELETE.equals(action))
+            {
                 processDeleteNotification(intent);
             }
-        } finally {
+        }
+        finally
+        {
             WakefulBroadcastReceiver.completeWakefulIntent(intent);
         }
     }
 
-    private void processDeleteNotification(Intent intent) {
+    private void processDeleteNotification(Intent intent)
+    {
         // Log something?
     }
-    private void processStartNotification() {
+
+    private void processStartNotification()
+    {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         final String mFolderUrl = sp.getString("download_url", "https://www.dropbox.com/sh/ya38ajmh9bezwhz/AABdJ69NcP-TDN4XlnNG83t_a?dl=0");
         try
         {
             mRecentUpdate = SettingsActivity.mDropboxDateFormat.parse(sp.getString("date", "Thu, 01 Jan 1970 00:00:00 +0000"));
-        }catch (ParseException e)
+        }
+        catch(ParseException e)
         {
             Log.d("DATE", e.getMessage());
         }
@@ -94,7 +107,7 @@ public class NotificationIntentService extends IntentService
             @Override
             public void onConnectionAvailable(Long responseTime)
             {
-                DropboxMetadata dropboxMetadata= new DropboxMetadata(SettingsActivity.mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
+                DropboxMetadata dropboxMetadata = new DropboxMetadata(SettingsActivity.mDropboxDateFormat, getApplicationContext(), new DropboxMetadata.DropboxMetadataListener()
                 {
                     @Override
                     public void onTaskEnd(List<DropboxEntity> result)
@@ -102,14 +115,14 @@ public class NotificationIntentService extends IntentService
                         try
                         {
                             File file = new File(getFilesDir() + "/dropbox_entities.dat");
-                            if (!file.exists()) file.createNewFile();
+                            if(!file.exists()) file.createNewFile();
 
                             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir() + "/dropbox_entities.dat"));
                             List<DropboxEntity> oldEntities = (List<DropboxEntity>) ois.readObject();
 
                             List<DropboxEntity> newEntities = DropboxEntity.getNewEntities(oldEntities, result);
 
-                            if (newEntities.size() > 0)
+                            if(newEntities.size() > 0)
                             {
                                 Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                                 Intent downloadIntent = new Intent();
@@ -124,12 +137,13 @@ public class NotificationIntentService extends IntentService
                                 for(DropboxEntity entity : newEntities)
                                 {
                                     if(entity.getType() == DropboxEntity.TYPE_FILE) style
-                                            .addLine(entity.getName()+" "
-                                                    +getString(R.string.notify_changelog_in) +" "
-                                                    +entity.getParentDirectory().replace("/", ""));
+                                            .addLine(entity.getName() + " "
+                                                    + getString(R.string.notify_changelog_in) + " "
+                                                    + entity.getParentDirectory().replace("/", ""));
                                 }
 
-                                if(newEntities.size() > 7) style.setSummaryText(String.format(getString(R.string.notify_changelog_more), newEntities.size()-7));
+                                if(newEntities.size() > 7)
+                                    style.setSummaryText(String.format(getString(R.string.notify_changelog_more), newEntities.size() - 7));
 
                                 final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                                 builder.setContentTitle(getString(R.string.notify_title))
@@ -147,7 +161,8 @@ public class NotificationIntentService extends IntentService
 
                                 final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify(NOTIFICATION_ID, builder.build());
-                            } else
+                            }
+                            else
                             {
                                 Log.d("IntentService", "No update");
                             }
@@ -155,12 +170,13 @@ public class NotificationIntentService extends IntentService
                             /*Date date = mDropboxDateFormat.parse("");
                             mNewRecentDate = date.after(mRecentUpdate) ? date : mRecentUpdate;
                             showDownloadDialog(date.after(mRecentUpdate));*/
-                        } catch (ClassNotFoundException | EOFException e)
+                        }
+                        catch(ClassNotFoundException | EOFException e)
                         {
                             try
                             {
                                 File file = new File(getFilesDir() + "/dropbox_entities.dat");
-                                if (!file.exists()) file.createNewFile();
+                                if(!file.exists()) file.createNewFile();
 
                                 Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -176,12 +192,13 @@ public class NotificationIntentService extends IntentService
                                 for(DropboxEntity entity : result)
                                 {
                                     if(entity.getType() == DropboxEntity.TYPE_FILE) style
-                                            .addLine(entity.getName()+" "
-                                                    +getString(R.string.notify_changelog_in) +" "
-                                                    +entity.getParentDirectory().replace("/", ""));
+                                            .addLine(entity.getName() + " "
+                                                    + getString(R.string.notify_changelog_in) + " "
+                                                    + entity.getParentDirectory().replace("/", ""));
                                 }
 
-                                if(result.size() > 7) style.setSummaryText(String.format(getString(R.string.notify_changelog_more), result.size()-7));
+                                if(result.size() > 7)
+                                    style.setSummaryText(String.format(getString(R.string.notify_changelog_more), result.size() - 7));
 
                                 final NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                                 builder.setContentTitle(getString(R.string.notify_title))
@@ -202,11 +219,13 @@ public class NotificationIntentService extends IntentService
                                 final NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify(NOTIFICATION_ID, builder.build());
 
-                            } catch (IOException e1)
+                            }
+                            catch(IOException e1)
                             {
                                 Log.e("ReadError1", "", e1);
                             }
-                        } catch (IOException e2)
+                        }
+                        catch(IOException e2)
                         {
                             Log.e("ReadError1", "", e2);
                         }

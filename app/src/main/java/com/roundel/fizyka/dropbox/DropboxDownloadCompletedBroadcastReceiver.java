@@ -19,7 +19,6 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -42,8 +41,8 @@ public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastR
         {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             String folderPath = prefs.getString("download_path", "/fizyka/");
-            if(folderPath.charAt(folderPath.length()-1) != '/') folderPath+="/";
-            if(folderPath.charAt(0) != '/') folderPath = "/"+folderPath;
+            if(folderPath.charAt(folderPath.length() - 1) != '/') folderPath += "/";
+            if(folderPath.charAt(0) != '/') folderPath = "/" + folderPath;
 
             Intent openFile = new Intent();
             openFile.setAction(android.content.Intent.ACTION_VIEW);
@@ -65,17 +64,21 @@ public class DropboxDownloadCompletedBroadcastReceiver extends WakefulBroadcastR
 
             if(prefs.getBoolean("extract", true))
             {
-                String destination = Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath;
-                String source = destination+context.getString(R.string.file_name);
+                String destination = Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath;
+                String source = destination + context.getString(R.string.file_name);
 
-                try {
+                try
+                {
                     ZipFile zipFile = new ZipFile(source);
-                    if (zipFile.isEncrypted()) {
+                    if(zipFile.isEncrypted())
+                    {
                         throw new ZipException("File is encrypted");
                     }
                     zipFile.extractAll(destination);
                     Log.d("Zip", "Extracted successfully");
-                } catch (ZipException e) {
+                }
+                catch(ZipException e)
+                {
                     e.printStackTrace();
                 }
             }

@@ -1,25 +1,20 @@
 package com.roundel.fizyka.dropbox;
 
 
-import android.app.DownloadManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.roundel.fizyka.dropbox.DropboxDownloadCompletedBroadcastReceiver;
-import com.roundel.fizyka.dropbox.DropboxDownloader;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,14 +35,17 @@ public class DownloadButtonPressedBroadcastReceiver extends WakefulBroadcastRece
         if(action.equals(DropboxDownloader.ACTION_DOWNLOAD))
         {
             String jsonEntities = intent.getStringExtra("ENTITIES");
-            Type type = new TypeToken<List<DropboxEntity>>(){}.getType();
+            Type type = new TypeToken<List<DropboxEntity>>()
+            {
+            }.getType();
             List<DropboxEntity> entitiesToSave = (new Gson()).fromJson(jsonEntities, type);
             try
             {
-                FileOutputStream out = new FileOutputStream(context.getFilesDir()+"/dropbox_entities.dat");
+                FileOutputStream out = new FileOutputStream(context.getFilesDir() + "/dropbox_entities.dat");
                 ObjectOutputStream oout = new ObjectOutputStream(out);
                 oout.writeObject(entitiesToSave);
-            } catch (IOException e)
+            }
+            catch(IOException e)
             {
                 e.printStackTrace();
             }

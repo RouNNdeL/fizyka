@@ -3,11 +3,11 @@ package com.roundel.fizyka;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.DialogFragment;
 
 public class RestartDialogFragment extends DialogFragment
 {
@@ -20,7 +20,8 @@ public class RestartDialogFragment extends DialogFragment
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(title);
         builder.setMessage(message);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
+        {
 
             @Override
             public void onClick(DialogInterface p1, int p2)
@@ -31,12 +32,13 @@ public class RestartDialogFragment extends DialogFragment
                 editor.clear();
                 editor.putString("date", date);
                 editor.commit();
-                Intent i = getActivity().getBaseContext().getPackageManager().getLaunchIntentForPackage( getActivity().getBaseContext().getPackageName() );
+                Intent i = getActivity().getBaseContext().getPackageManager().getLaunchIntentForPackage(getActivity().getBaseContext().getPackageName());
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
             }
         });
-        builder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+        {
 
             @Override
             public void onClick(DialogInterface p1, int p2)

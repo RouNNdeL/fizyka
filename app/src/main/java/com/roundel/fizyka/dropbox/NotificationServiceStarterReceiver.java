@@ -13,9 +13,11 @@ public final class NotificationServiceStarterReceiver extends BroadcastReceiver
 {
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent)
+    {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if(prefs.getBoolean("notification", false)) {
+        if(prefs.getBoolean("notification", false))
+        {
             NotificationEventReceiver.setupAlarm(context, Long.parseLong(prefs.getString("refresh_time", "240")));
         }
     }

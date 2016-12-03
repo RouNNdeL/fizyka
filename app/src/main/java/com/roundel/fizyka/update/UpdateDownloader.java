@@ -4,9 +4,7 @@ import android.app.DownloadManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.roundel.fizyka.R;
 
@@ -35,11 +33,11 @@ public class UpdateDownloader
 
     public void start(Context context)
     {
-        File file = new File(context.getExternalFilesDir(null)+"/"+context.getString(R.string.update_file_name));
+        File file = new File(context.getExternalFilesDir(null) + "/" + context.getString(R.string.update_file_name));
         if(file.exists()) file.delete();
 
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        Uri Download_Uri = Uri.parse(context.getString(R.string.update_url)+"app-release.apk");
+        Uri Download_Uri = Uri.parse(context.getString(R.string.update_url) + "app-release.apk");
         DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
@@ -58,7 +56,7 @@ public class UpdateDownloader
                 .setColor(context.getColor(R.color.colorPrimary))
                 .setContentTitle(context.getString(R.string.update_in_progress_title))
                 .setContentText(String.format(context.getString(R.string.update_in_progress_disc), mNewVersion))
-                .setProgress(0,0,true)
+                .setProgress(0, 0, true)
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
         final NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -72,9 +70,9 @@ public class UpdateDownloader
 
     public static boolean checkIfNew(String newVersion, String oldVersion)
     {
-        String newVersionNum = Character.isLetter(newVersion.charAt(newVersion.length()-1))?newVersion.substring(0,newVersion.length()-1):newVersion;
-        String oldVersionNum = Character.isLetter(oldVersion.charAt(oldVersion.length()-1))?oldVersion.substring(0,oldVersion.length()-1):oldVersion;
+        String newVersionNum = Character.isLetter(newVersion.charAt(newVersion.length() - 1)) ? newVersion.substring(0, newVersion.length() - 1) : newVersion;
+        String oldVersionNum = Character.isLetter(oldVersion.charAt(oldVersion.length() - 1)) ? oldVersion.substring(0, oldVersion.length() - 1) : oldVersion;
 
-        return newVersionNum.compareTo(oldVersionNum)==0?newVersion.compareTo(oldVersion)>0:newVersionNum.compareTo(oldVersionNum)>0;
+        return newVersionNum.compareTo(oldVersionNum) == 0 ? newVersion.compareTo(oldVersion) > 0 : newVersionNum.compareTo(oldVersionNum) > 0;
     }
 }

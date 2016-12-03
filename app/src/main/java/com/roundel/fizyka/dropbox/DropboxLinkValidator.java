@@ -9,15 +9,11 @@ import com.roundel.fizyka.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-10-05.
@@ -54,8 +50,9 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     {
         String urlString = params[0];
         String urlShared = params[1];
-        try {
-            urlString += "?link="+ URLEncoder.encode(urlShared, "UTF-8");
+        try
+        {
+            urlString += "?link=" + URLEncoder.encode(urlShared, "UTF-8");
             URL url = new URL(urlString);
             JSONObject jsonData = new JSONObject();
             jsonData.put("link", urlShared);
@@ -63,8 +60,8 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
             urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type","application/json");
-            urlConnection.setRequestProperty("Authorization", "Bearer "+mContext.getString(R.string.api_token));
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Authorization", "Bearer " + mContext.getString(R.string.api_token));
 
             // Send POST data.
             DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
@@ -83,7 +80,7 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
             {
                 return ERROR_FORBIDDEN;
             }
-            else if (HttpResponseCode == HttpURLConnection.HTTP_NOT_FOUND)
+            else if(HttpResponseCode == HttpURLConnection.HTTP_NOT_FOUND)
             {
                 return ERROR_NOT_FOUND;
             }
@@ -93,7 +90,7 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
             }
 
         }
-        catch (IOException|JSONException e)
+        catch(IOException | JSONException e)
         {
             Log.e(TAG, e.getMessage());
         }
@@ -109,6 +106,7 @@ public class DropboxLinkValidator extends AsyncTask<String, String, String>
     public interface DropboxLinkValidatorListener
     {
         void onTaskStart();
+
         void onTaskEnd(String result);
     }
 }

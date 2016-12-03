@@ -1,32 +1,26 @@
 package com.roundel.fizyka.activity;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.StrictMode;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.roundel.fizyka.Connectivity;
 import com.roundel.fizyka.R;
-import com.roundel.fizyka.dropbox.DropboxDownloader;
 import com.roundel.fizyka.update.UpdateChecker;
-import com.roundel.fizyka.update.UpdateDownloadCompletedBroadcastReceiver;
 import com.roundel.fizyka.update.UpdateDownloader;
 
 public class AboutActivity extends AppCompatActivity
 {
     TextView newVersion;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -40,7 +34,8 @@ public class AboutActivity extends AppCompatActivity
             PackageManager manager = this.getPackageManager();
             PackageInfo info = manager.getPackageInfo(this.getPackageName(), PackageManager.GET_ACTIVITIES);
             versionHolder.setText(getString(R.string.about_version) + " " + info.versionName);
-        } catch (PackageManager.NameNotFoundException e)
+        }
+        catch(PackageManager.NameNotFoundException e)
         {
             Log.e("ABOUT", e.getMessage());
         }
@@ -78,7 +73,7 @@ public class AboutActivity extends AppCompatActivity
                         {
                             PackageManager manager = getApplicationContext().getPackageManager();
                             PackageInfo info = manager.getPackageInfo(getApplicationContext().getPackageName(), PackageManager.GET_ACTIVITIES);
-                            if (checkIfNew(version, info.versionName))
+                            if(checkIfNew(version, info.versionName))
                             {
                                 newVersion.setText(getString(R.string.about_version_new_found) + " " + version);
                                 UpdateDownloader downloader = new UpdateDownloader(version);
@@ -90,8 +85,10 @@ public class AboutActivity extends AppCompatActivity
                                 downloadPrefsEditor.putString(UpdateDownloader.DOWNLOAD_VERSION, version);
                                 downloadPrefsEditor.apply();
                             }
-                            else newVersion.setText(getString(R.string.about_version_new_not_found));
-                        } catch (PackageManager.NameNotFoundException e)
+                            else
+                                newVersion.setText(getString(R.string.about_version_new_not_found));
+                        }
+                        catch(PackageManager.NameNotFoundException e)
                         {
                         }
                     }
@@ -110,9 +107,9 @@ public class AboutActivity extends AppCompatActivity
 
     public boolean checkIfNew(String newVersion, String oldVersion)
     {
-        String newVersionNum = Character.isLetter(newVersion.charAt(newVersion.length()-1))?newVersion.substring(0,newVersion.length()-1):newVersion;
-        String oldVersionNum = Character.isLetter(oldVersion.charAt(oldVersion.length()-1))?oldVersion.substring(0,oldVersion.length()-1):oldVersion;
+        String newVersionNum = Character.isLetter(newVersion.charAt(newVersion.length() - 1)) ? newVersion.substring(0, newVersion.length() - 1) : newVersion;
+        String oldVersionNum = Character.isLetter(oldVersion.charAt(oldVersion.length() - 1)) ? oldVersion.substring(0, oldVersion.length() - 1) : oldVersion;
 
-        return newVersionNum.compareTo(oldVersionNum)==0?newVersion.compareTo(oldVersion)>0:newVersionNum.compareTo(oldVersionNum)>0;
+        return newVersionNum.compareTo(oldVersionNum) == 0 ? newVersion.compareTo(oldVersion) > 0 : newVersionNum.compareTo(oldVersionNum) > 0;
     }
 }

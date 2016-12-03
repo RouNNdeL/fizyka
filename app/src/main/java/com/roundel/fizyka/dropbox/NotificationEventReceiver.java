@@ -9,9 +9,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
-import java.util.Calendar;
-import java.util.Date;
-
 public class NotificationEventReceiver extends WakefulBroadcastReceiver
 {
 
@@ -34,26 +31,31 @@ public class NotificationEventReceiver extends WakefulBroadcastReceiver
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent)
+    {
         String action = intent.getAction();
         Intent serviceIntent = null;
-        if (ACTION_START_NOTIFICATION_SERVICE.equals(action)) {
+        if(ACTION_START_NOTIFICATION_SERVICE.equals(action))
+        {
             Log.i(getClass().getSimpleName(), "onReceive from alarm, starting notification service");
             serviceIntent = NotificationIntentService.createIntentStartNotificationService(context);
         }
 
-        if (serviceIntent != null) {
+        if(serviceIntent != null)
+        {
             startWakefulService(context, serviceIntent);
         }
     }
 
-    private static PendingIntent getStartPendingIntent(Context context) {
+    private static PendingIntent getStartPendingIntent(Context context)
+    {
         Intent intent = new Intent(context, NotificationEventReceiver.class);
         intent.setAction(ACTION_START_NOTIFICATION_SERVICE);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    public static PendingIntent getDeleteIntent(Context context) {
+    public static PendingIntent getDeleteIntent(Context context)
+    {
         Intent intent = new Intent(context, NotificationEventReceiver.class);
         intent.setAction(ACTION_DELETE_NOTIFICATION);
         return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);

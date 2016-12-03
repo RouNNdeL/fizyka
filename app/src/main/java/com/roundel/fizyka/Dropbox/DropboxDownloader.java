@@ -4,7 +4,6 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 import com.roundel.fizyka.R;
 
@@ -32,18 +31,19 @@ public class DropboxDownloader
             if(url.contains("dl=0")) url = url.replace("dl=0", "dl=1");
             else if(url.contains("?"))
             {
-                if(Objects.equals(url.charAt(url.length()-1), '?')) url+="dl=1";
-                else url+="&dl=1";
+                if(Objects.equals(url.charAt(url.length() - 1), '?')) url += "dl=1";
+                else url += "&dl=1";
             }
-            else url+="?dl=1";
+            else url += "?dl=1";
         }
         //Log.d("DropboxDownloader", url);
         mDownloadURL = url;
         mPath = path;
     }
+
     public void start(Context context)
     {
-        File file = new File(Environment.getExternalStorageDirectory()+mPath+context.getString(R.string.file_name));
+        File file = new File(Environment.getExternalStorageDirectory() + mPath + context.getString(R.string.file_name));
         if(file.exists()) file.delete();
 
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);

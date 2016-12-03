@@ -1,10 +1,6 @@
 package com.roundel.fizyka.update;
 
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -48,7 +44,9 @@ public class UpdateChecker extends AsyncTask<String, Integer, String>
             BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String currentLine;
 
-            while (!(currentLine = br.readLine()).contains("versionName")){}
+            while(!(currentLine = br.readLine()).contains("versionName"))
+            {
+            }
             currentLine = extractVersion(currentLine);
             mVersion = currentLine;
 
@@ -79,7 +77,7 @@ public class UpdateChecker extends AsyncTask<String, Integer, String>
         boolean inQuotation = false;
         for(char c : line.toCharArray())
         {
-            if(inQuotation && c!='"') output+=c;
+            if(inQuotation && c != '"') output += c;
             if(c == '"') inQuotation = !inQuotation;
         }
         return output;
@@ -88,6 +86,7 @@ public class UpdateChecker extends AsyncTask<String, Integer, String>
     public interface UpdateCheckerListener
     {
         void onTaskStart();
+
         void onTaskEnd(String result);
     }
 }

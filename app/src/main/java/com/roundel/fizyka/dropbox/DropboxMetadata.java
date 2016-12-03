@@ -19,14 +19,12 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by RouNdeL on 2016-09-24.
  */
-public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEntity>>
+public class DropboxMetadata extends AsyncTask<String, Integer, List<DropboxEntity>>
 {
     private final String TAG = "DropboxTask";
 
@@ -39,7 +37,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
     public DropboxMetadata(DateFormat dateFormat, Context context, DropboxMetadataListener listener)
     {
         this.dateFormat = dateFormat;
-        this.listener=listener;
+        this.listener = listener;
         this.context = context;
     }
 
@@ -61,20 +59,23 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
     {
         listener.onTaskStart();
     }
+
     protected void checkSubdirectories(String url, String folder, String path)
     {
         String response = singlePOST(url, folder, path);
         //Log.d(TAG, response);
-        try{
+        try
+        {
             JSONObject jsonObject = new JSONObject(response);
 
             Boolean isDir = jsonObject.getBoolean("is_dir");
             String mimeType = null;
             int size;
             if(jsonObject.has("mime_type")) mimeType = jsonObject.getString("mime_type");
-            if(isDir && jsonObject.has("contents")) size = jsonObject.getJSONArray("contents").length();
+            if(isDir && jsonObject.has("contents"))
+                size = jsonObject.getJSONArray("contents").length();
             else size = jsonObject.getInt("bytes");
-            entities.add(new DropboxEntity(isDir?DropboxEntity.TYPE_FOLDER:DropboxEntity.TYPE_FILE,
+            entities.add(new DropboxEntity(isDir ? DropboxEntity.TYPE_FOLDER : DropboxEntity.TYPE_FILE,
                     path,
                     size,
                     mimeType,
@@ -82,23 +83,25 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
             if(jsonObject.has("contents"))
             {
                 JSONArray arr = jsonObject.getJSONArray("contents");
-                for(int i = 0; i < arr.length(); i++ )
+                for(int i = 0; i < arr.length(); i++)
                 {
                     checkSubdirectories(url, folder, arr.getJSONObject(i).getString("path"));
                 }
             }
 
         }
-        catch (JSONException | ParseException e)
+        catch(JSONException | ParseException e)
         {
             Log.e(TAG, e.getMessage());
         }
     }
+
     protected String singlePOST(String urlString, String urlShared, String urlPath)
     {
         String resultToDisplay = "";
-        try {
-            urlString += "?link="+ URLEncoder.encode(urlShared, "UTF-8")+"&path="+urlPath;
+        try
+        {
+            urlString += "?link=" + URLEncoder.encode(urlShared, "UTF-8") + "&path=" + urlPath;
             URL url = new URL(urlString);
             JSONObject jsonData = new JSONObject();
             jsonData.put("link", urlShared);
@@ -107,8 +110,8 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
             urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type","application/json");
-            urlConnection.setRequestProperty("Authorization", "Bearer "+context.getString(R.string.api_token));
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Authorization", "Bearer " + context.getString(R.string.api_token));
 
             // Send POST data.
             DataOutputStream printout = new DataOutputStream(urlConnection.getOutputStream());
@@ -125,7 +128,9 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
                 //Log.d(TAG, resultToDisplay);
             }
 
-        } catch (Exception e) {
+        }
+        catch(Exception e)
+        {
 
             System.out.println(e.getMessage());
 
@@ -137,6 +142,7 @@ public class DropboxMetadata extends AsyncTask <String, Integer, List<DropboxEnt
     public interface DropboxMetadataListener
     {
         void onTaskStart();
+
         void onTaskEnd(List<DropboxEntity> entities);
     }
 }

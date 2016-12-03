@@ -5,18 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.WakefulBroadcastReceiver;
-import android.util.Log;
 
 import com.roundel.fizyka.R;
-import com.roundel.fizyka.dropbox.DropboxDownloader;
 
 import java.io.File;
 import java.util.Objects;
@@ -37,7 +33,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
 
         if(Objects.equals(action, DownloadManager.ACTION_DOWNLOAD_COMPLETE) && Objects.equals(reference, requiredReference))
         {
-            File file = new File(context.getExternalFilesDir(null)+"/"+context.getString(R.string.update_file_name));
+            File file = new File(context.getExternalFilesDir(null) + "/" + context.getString(R.string.update_file_name));
             PackageManager packageManager = context.getPackageManager();
             PackageInfo info = packageManager.getPackageArchiveInfo(file.getAbsolutePath(), PackageManager.GET_ACTIVITIES);
 
@@ -45,7 +41,7 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancel(UpdateDownloader.NOTIFICATION_UPDATE_DOWNLOADING);
 
-            if (Objects.equals(info.versionName, version))
+            if(Objects.equals(info.versionName, version))
             {
                 Intent installIntent = new Intent();
                 installIntent.setAction(Intent.ACTION_VIEW);
@@ -71,8 +67,9 @@ public class UpdateDownloadCompletedBroadcastReceiver extends WakefulBroadcastRe
                 {
                     versionInstalled = packageManager.getPackageInfo(context.getPackageName(), 0).versionName;
                 }
-                catch (PackageManager.NameNotFoundException e)
-                {}
+                catch(PackageManager.NameNotFoundException e)
+                {
+                }
                 String body = String.format("Expected version: %s\nVersion found: %s\nVersion installed: %s", version, info.versionName, versionInstalled);
                 Intent sendIntent = new Intent();
                 sendIntent.setData(Uri.parse("mailto:rounndel@gmail.com"));

@@ -5,11 +5,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.RotateAnimation;
 import android.widget.BaseAdapter;
@@ -62,7 +60,8 @@ public class FileAdapter extends BaseAdapter
     private boolean rotateArrow;
     private int sortingMode;
 
-    public FileAdapter(Context context, int resource, String folder, boolean rotateArrow, boolean animateArrow, int sortingMode, OnSortArrowClickListener listener) {
+    public FileAdapter(Context context, int resource, String folder, boolean rotateArrow, boolean animateArrow, int sortingMode, OnSortArrowClickListener listener)
+    {
         this.mContext = context;
         this.mResource = resource;
         this.folderPath = folder;
@@ -104,6 +103,18 @@ public class FileAdapter extends BaseAdapter
         return mList.size();
     }
 
+    @Override
+    public int getViewTypeCount()
+    {
+        return 3;
+    }
+
+    @Override
+    public int getItemViewType(int position)
+    {
+        return mList.get(position).getType();
+    }
+
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent)
@@ -112,7 +123,7 @@ public class FileAdapter extends BaseAdapter
 
         DropboxEntity entity = getItem(position);
 
-        if(fileView == null && entity.getType() != DropboxEntity.TYPE_HEADER)
+        if(fileView == null && getItemViewType(position) != DropboxEntity.TYPE_HEADER)
         {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             fileView = inflater.inflate(mResource, null);
@@ -123,7 +134,7 @@ public class FileAdapter extends BaseAdapter
             fileView = inflater.inflate(R.layout.file_header, null);
         }
 
-        if (entity != null && entity.getType() != DropboxEntity.TYPE_HEADER)
+        if(entity != null && getItemViewType(position) != DropboxEntity.TYPE_HEADER)
         {
             File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath + entity.getPath());
             boolean fileExists = file.exists();
@@ -133,13 +144,13 @@ public class FileAdapter extends BaseAdapter
             ImageView imageView = (ImageView) fileView.findViewById(R.id.fileIcon);
             Drawable icon;
             TextView size = (TextView) fileView.findViewById(R.id.fileSize);
-            if (entity.getType() == DropboxEntity.TYPE_FILE)
+            if(getItemViewType(position) == DropboxEntity.TYPE_FILE)
             {
                 size.setText(DropboxEntity.formatSize(entity.getSize(), mContext));
                 imageView.setScaleX(0.9f);
                 imageView.setScaleY(0.9f);
 
-                if (!fileView.isEnabled())
+                if(!fileView.isEnabled())
                 {
                     TextView fileMissing = (TextView) fileView.findViewById(R.id.fileMissing);
                     if(!fileExists)
@@ -151,31 +162,34 @@ public class FileAdapter extends BaseAdapter
                     fileView.setClickable(!fileView.isEnabled());
                 }
 
-                if (MIME_TYPE_PDF.contains(entity.getMimeType()))
+                if(MIME_TYPE_PDF.contains(entity.getMimeType()))
                 {
                     icon = mContext.getDrawable(R.drawable.file_pdf_white);
-                    if (fileView.isEnabled())
+                    if(fileView.isEnabled())
                         icon.setColorFilter(mContext.getColor(R.color.pdfRed), PorterDuff.Mode.MULTIPLY);
                     else
                         icon.setColorFilter(mContext.getColor(R.color.pdfRed_disabled), PorterDuff.Mode.MULTIPLY);
-                } else if (MIME_TYPE_IMAGE.contains(entity.getMimeType()))
+                }
+                else if(MIME_TYPE_IMAGE.contains(entity.getMimeType()))
                 {
                     icon = mContext.getDrawable(R.drawable.file_image_white);
-                    if (fileView.isEnabled())
+                    if(fileView.isEnabled())
                         icon.setColorFilter(mContext.getColor(R.color.pdfRed), PorterDuff.Mode.MULTIPLY);
                     else
                         icon.setColorFilter(mContext.getColor(R.color.pdfRed_disabled), PorterDuff.Mode.MULTIPLY);
-                } else if (MIME_TYPE_TXT.contains(entity.getMimeType()))
+                }
+                else if(MIME_TYPE_TXT.contains(entity.getMimeType()))
                 {
                     icon = mContext.getDrawable(R.drawable.file_document_text);
-                    if (fileView.isEnabled())
+                    if(fileView.isEnabled())
                         icon.setColorFilter(mContext.getColor(R.color.textBlue), PorterDuff.Mode.MULTIPLY);
                     else
                         icon.setColorFilter(mContext.getColor(R.color.textBlue_disabled), PorterDuff.Mode.MULTIPLY);
-                } else
+                }
+                else
                 {
                     icon = mContext.getDrawable(R.drawable.file_default_white_24dp);
-                    if (fileView.isEnabled())
+                    if(fileView.isEnabled())
                         icon.setColorFilter(mContext.getColor(R.color.textBlue), PorterDuff.Mode.MULTIPLY);
                     else
                         icon.setColorFilter(mContext.getColor(R.color.textBlue_disabled), PorterDuff.Mode.MULTIPLY);
@@ -183,7 +197,7 @@ public class FileAdapter extends BaseAdapter
             }
             else
             {
-                if (!fileView.isEnabled())
+                if(!fileView.isEnabled())
                 {
                     //LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
                     //params.weight = 2f;
@@ -192,7 +206,7 @@ public class FileAdapter extends BaseAdapter
                     fileMissing.setTextColor(mContext.getColor(R.color.primaryText_disabled));
                     //fileMissing.setLayoutParams(params);
                 }
-                if (entity.getSize() == 1)
+                if(entity.getSize() == 1)
                     size.setText(String.format(
                             Locale.getDefault(),
                             mContext.getString(R.string.file_item),
@@ -204,7 +218,7 @@ public class FileAdapter extends BaseAdapter
                             entity.getSize()));
                 icon = mContext.getDrawable(R.drawable.file_folder_white_24dp);
 
-                if (fileView.isEnabled())
+                if(fileView.isEnabled())
                     icon.setColorFilter(mContext.getColor(R.color.folderGrey), PorterDuff.Mode.MULTIPLY);
                 else
                     icon.setColorFilter(mContext.getColor(R.color.folderGrey_disabled), PorterDuff.Mode.MULTIPLY);
@@ -213,21 +227,20 @@ public class FileAdapter extends BaseAdapter
 
             TextView title = (TextView) fileView.findViewById(R.id.fileText);
             title.setText(entity.getName());
-            if (fileView.isEnabled())
+            if(fileView.isEnabled())
                 title.setTextColor(mContext.getColor(R.color.primaryText));
             else
                 title.setTextColor(mContext.getColor(R.color.primaryText_disabled));
 
             TextView date = (TextView) fileView.findViewById(R.id.fileDate);
             date.setText(dateFormat.format(entity.getDate()));
-            if (fileView.isEnabled())
+            if(fileView.isEnabled())
                 date.setTextColor(mContext.getColor(R.color.secondaryText));
             else
                 date.setTextColor(mContext.getColor(R.color.secondaryText_disabled));
 
 
-
-            if (fileView.isEnabled())
+            if(fileView.isEnabled())
                 size.setTextColor(mContext.getColor(R.color.secondaryText));
             else
                 size.setTextColor(mContext.getColor(R.color.secondaryText_disabled));
@@ -248,15 +261,19 @@ public class FileAdapter extends BaseAdapter
             {
                 arrow.setVisibility(View.VISIBLE);
                 mode.setText(DropboxEntity.getLocalizedSortingName(mContext, sortingMode));
-                mode.setOnClickListener(new View.OnClickListener() {
+                mode.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View view)
+                    {
                         listener.onClick(arrow);
                     }
                 });
-                arrow.setOnClickListener(new View.OnClickListener() {
+                arrow.setOnClickListener(new View.OnClickListener()
+                {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View view)
+                    {
                         listener.onClick(arrow);
                     }
                 });
@@ -272,7 +289,7 @@ public class FileAdapter extends BaseAdapter
             {
                 arrow.clearAnimation();
                 RotateAnimation rotation;
-                if(arrow.getRotation()%360f > 180)
+                if(arrow.getRotation() % 360f > 180)
                     rotation = (RotateAnimation) AnimationUtils.loadAnimation(mContext, R.anim.arrow_rotation_animation);
                 else
                     rotation = (RotateAnimation) AnimationUtils.loadAnimation(mContext, R.anim.arrow_rotation_animation_reversed);

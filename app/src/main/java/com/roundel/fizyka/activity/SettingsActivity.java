@@ -28,13 +28,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.roundel.fizyka.Connectivity;
+import com.roundel.fizyka.R;
+import com.roundel.fizyka.RestartDialogFragment;
 import com.roundel.fizyka.dropbox.DropboxDownloader;
 import com.roundel.fizyka.dropbox.DropboxEntity;
 import com.roundel.fizyka.dropbox.DropboxLinkValidator;
 import com.roundel.fizyka.dropbox.DropboxMetadata;
 import com.roundel.fizyka.dropbox.NotificationEventReceiver;
-import com.roundel.fizyka.R;
-import com.roundel.fizyka.RestartDialogFragment;
 
 import java.io.EOFException;
 import java.io.File;
@@ -73,7 +73,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     private View rootView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         MyPreferenceFragment preferenceFragment = new MyPreferenceFragment();
         getFragmentManager()
@@ -86,8 +87,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
 
 
     }
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.settings_activity_menu, menu);
         return true;
@@ -96,7 +99,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     @Override
     public boolean onOptionsItemSelected(final MenuItem item)
     {
-        switch (item.getItemId())
+        switch(item.getItemId())
         {
             case R.id.menu_reset:
                 DialogFragment dialog = new RestartDialogFragment();
@@ -140,7 +143,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         {
             showDownloadDialog(true);
         }
-        else if(requestCode == SWITCH  && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        else if(requestCode == SWITCH && grantResults[0] == PackageManager.PERMISSION_GRANTED)
         {
             Toast.makeText(SettingsActivity.this, getString(R.string.permission_allowed_notification), Toast.LENGTH_SHORT).show();
         }
@@ -153,7 +156,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
             Toast.makeText(SettingsActivity.this, getString(R.string.permission_denied_notification), Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     private void checkForUpdates(final MenuItem refreshItem)
@@ -184,10 +186,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                         //Log.d("DropboxEntity", DropboxEntity.listToString(result));
                         try
                         {
-                            File file = new File(getFilesDir()+"/dropbox_entities.dat");
-                            if(! file.exists()) file.createNewFile();
+                            File file = new File(getFilesDir() + "/dropbox_entities.dat");
+                            if(!file.exists()) file.createNewFile();
 
-                            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir()+"/dropbox_entities.dat"));
+                            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir() + "/dropbox_entities.dat"));
                             List<DropboxEntity> oldEntities = (List<DropboxEntity>) ois.readObject();
 
                             List<DropboxEntity> newEntities = DropboxEntity.getNewEntities(oldEntities, result);
@@ -205,23 +207,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                                 showDownloadDialog(false);
                             }
                         }
-                        catch (InvalidClassException | ClassNotFoundException | EOFException e)
+                        catch(InvalidClassException | ClassNotFoundException | EOFException e)
                         {
                             try
                             {
-                                File file = new File(getFilesDir()+"/dropbox_entities.dat");
-                                if(! file.exists()) file.createNewFile();
+                                File file = new File(getFilesDir() + "/dropbox_entities.dat");
+                                if(!file.exists()) file.createNewFile();
                                 entitiesToSave = result;
                                 deltaEntities = result;
                                 showDownloadDialog(true);
 
                             }
-                            catch (IOException e1)
+                            catch(IOException e1)
                             {
                                 Log.e("ReadError1", "", e1);
                             }
                         }
-                        catch (IOException e2)
+                        catch(IOException e2)
                         {
                             Log.e("ReadError1", "", e2);
                         }
@@ -238,7 +240,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                     @Override
                     public void onTaskEnd(String result)
                     {
-                        switch (result)
+                        switch(result)
                         {
                             case DropboxLinkValidator.NO_ERROR:
                                 dropboxMetadata.execute(getString(R.string.api_url), mFolderUrl, "/");
@@ -297,22 +299,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     {
         final DropboxDownloader downloader = new DropboxDownloader(mFolderUrl, mFolderPath);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+        if(ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(SettingsActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, newVersionAvailable ? UPDATE : NO_UPDATE);
         }
-        else{
+        else
+        {
             if(newVersionAvailable)
             {
                 builder.setTitle(getString(R.string.update_dialog_title));
-                builder.setMessage(getString(R.string.update_dialog_desc)+"\n"+DropboxEntity.getChangelog(deltaEntities, this));
+                builder.setMessage(getString(R.string.update_dialog_desc) + "\n" + DropboxEntity.getChangelog(deltaEntities, this));
             }
             else
             {
                 builder.setTitle(getString(R.string.no_update_dialog_title));
                 builder.setMessage(getString(R.string.no_update_dialog_desc));
             }
-            builder.setPositiveButton(getString(R.string.download_notify_button), new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.download_notify_button), new DialogInterface.OnClickListener()
+            {
 
                 @Override
                 public void onClick(DialogInterface p1, int p2)
@@ -329,7 +333,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                     saveEntities();
                 }
             });
-            builder.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
+            {
 
                 @Override
                 public void onClick(DialogInterface p1, int p2)
@@ -342,7 +347,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         }
     }
 
-    private void refresh(MenuItem refreshItem) {
+    private void refresh(MenuItem refreshItem)
+    {
      /* Attach a rotating ImageView to the refresh item as an ActionView */
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ImageView iv = (ImageView) inflater.inflate(R.layout.refresh_button_layout, null);
@@ -354,7 +360,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         refreshItem.setActionView(iv);
     }
 
-    private void completeRefresh(final MenuItem refreshItem) {
+    private void completeRefresh(final MenuItem refreshItem)
+    {
         if(refreshItem != null && refreshItem.getActionView() != null)
         {
             refreshItem.getActionView().getAnimation().setAnimationListener(new Animation.AnimationListener()
@@ -377,7 +384,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                         refreshItem.getActionView().clearAnimation();
                         refreshItem.setActionView(null);
                     }
-                    catch (NullPointerException e)
+                    catch(NullPointerException e)
                     {
 
                     }
@@ -394,21 +401,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         mFolderPath = sp.getString("download_path", "/fizyka/");
         mExtract = sp.getBoolean("extract", true);
 
-        if(mFolderPath.charAt(mFolderPath.length()-1) != '/')
+        if(mFolderPath.charAt(mFolderPath.length() - 1) != '/')
         {
-            mFolderPath+="/";
+            mFolderPath += "/";
             sp.edit().putString("download_path", mFolderPath).apply();
         }
         if(mFolderPath.charAt(0) != '/')
         {
-            mFolderPath = "/"+mFolderPath;
+            mFolderPath = "/" + mFolderPath;
             sp.edit().putString("download_path", mFolderPath).apply();
         }
         try
         {
             mRecentUpdate = mDropboxDateFormat.parse(sp.getString("date", UNIX_BEGGING_DATE));
             mNewRecentDate = mRecentUpdate;
-        }catch (ParseException e)
+        }
+        catch(ParseException e)
         {
             Log.d("DATE", e.getMessage());
         }
@@ -427,10 +435,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
         if(entitiesToSave == null) return;
         try
         {
-            FileOutputStream out = new FileOutputStream(getFilesDir()+"/dropbox_entities.dat");
+            FileOutputStream out = new FileOutputStream(getFilesDir() + "/dropbox_entities.dat");
             ObjectOutputStream oout = new ObjectOutputStream(out);
             oout.writeObject(entitiesToSave);
-        } catch (IOException e)
+        }
+        catch(IOException e)
         {
             e.printStackTrace();
         }
@@ -440,10 +449,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
     {
 
         @Override
-        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key)
+        {
             loadData(getActivity());
 
-            switch (key)
+            switch(key)
             {
                 case "time":
                 case "refresh_time":
@@ -457,7 +467,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                     {
                         NotificationEventReceiver.setupAlarm(getContext(), Long.parseLong(prefs.getString("refresh_time", "240")));
                         findPreference("time").setEnabled(true);
-                        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                        if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                         {
                             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SWITCH);
                             SwitchPreference preference = (SwitchPreference) findPreference("notification");
@@ -471,18 +481,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
                     else findPreference("original_dates").setEnabled(false);*/
             }
         }
+
         @Override
-        public void onResume() {
+        public void onResume()
+        {
             super.onResume();
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         }
 
         @Override
-        public void onPause() {
+        public void onPause()
+        {
             getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
             super.onPause();
         }
+
         @Override
         public void onCreate(final Bundle savedInstanceState)
         {
@@ -492,7 +506,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Act
             if(prefs.getBoolean("notification", false))
             {
                 findPreference("time").setEnabled(true);
-                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                if(ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
                 {
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, SWITCH);
                     SwitchPreference preference = (SwitchPreference) findPreference("notification");

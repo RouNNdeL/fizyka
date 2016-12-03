@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -16,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.support.design.widget.TextInputLayout;
 import android.widget.Toast;
 
 import com.roundel.fizyka.dropbox.DropboxLinkValidator;
@@ -37,23 +37,29 @@ public class ValidatingEditTextPreference extends EditTextPreference
     private final int VALIDATION_PATH = 0;
     private final int VALIDATION_URL = 1;
 
-    public ValidatingEditTextPreference(Context context) {
+    public ValidatingEditTextPreference(Context context)
+    {
         super(context);
         //Auto-generated constructor stub
     }
 
-    public ValidatingEditTextPreference(Context context, AttributeSet attrs) {
+    public ValidatingEditTextPreference(Context context, AttributeSet attrs)
+    {
         super(context, attrs);
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ValidatingEditTextPreference, 0, 0);
 
-        try {
+        try
+        {
             mValidationType = a.getInteger(R.styleable.ValidatingEditTextPreference_type, VALIDATION_PATH);
-        } finally {
+        }
+        finally
+        {
             a.recycle();
         }
     }
 
-    public ValidatingEditTextPreference(Context context, AttributeSet attrs, int defStyle) {
+    public ValidatingEditTextPreference(Context context, AttributeSet attrs, int defStyle)
+    {
         super(context, attrs, defStyle);
         //Auto-generated constructor stub
     }
@@ -64,7 +70,8 @@ public class ValidatingEditTextPreference extends EditTextPreference
     {
         ViewGroup container = (ViewGroup) dialogView
                 .findViewById(R.id.text_input_layout);
-        if (container != null) {
+        if(container != null)
+        {
             container.addView(editText, ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
         }
@@ -79,9 +86,11 @@ public class ValidatingEditTextPreference extends EditTextPreference
     }
 
     @Override
-    protected void showDialog(Bundle state) {
+    protected void showDialog(Bundle state)
+    {
         super.showDialog(state);
-        if (super.getDialog() instanceof AlertDialog) {
+        if(super.getDialog() instanceof AlertDialog)
+        {
             final AlertDialog dialog = (AlertDialog) super.getDialog();
             EditText editText = getEditText();
 
@@ -104,6 +113,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
     private final class ValidatingOnClickListener implements View.OnClickListener, TextView.OnEditorActionListener, TextWatcher, DialogInterface.OnClickListener
     {
         private final AlertDialog theDialog;
+
         private ValidatingOnClickListener(AlertDialog theDialog)
         {
             this.theDialog = theDialog;
@@ -123,7 +133,9 @@ public class ValidatingEditTextPreference extends EditTextPreference
         }
 
         @Override
-        public void onClick(DialogInterface dialogInterface, int i) {}
+        public void onClick(DialogInterface dialogInterface, int i)
+        {
+        }
 
         public void regexValidation()
         {
@@ -131,12 +143,12 @@ public class ValidatingEditTextPreference extends EditTextPreference
             TextInputLayout textInputLayout = (TextInputLayout) theDialog.findViewById(R.id.text_input_layout);
             if(mValidationType == VALIDATION_PATH)
             {
-                if(! text.matches("^(\\/[^\\/]+)+\\/{1}$"))
+                if(!text.matches("^(\\/[^\\/]+)+\\/{1}$"))
                 {
                     textInputLayout.setErrorEnabled(true);
                     textInputLayout.setError(getContext().getString(R.string.validation_path_invalid_slash));
                 }
-                else if(! text.matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
+                else if(!text.matches("^(\\/[a-zA-Z\\d\\-\\_]+)+\\/{1}$"))
                 {
                     textInputLayout.setErrorEnabled(true);
                     textInputLayout.setError(getContext().getString(R.string.validation_path_invalid_chars));
@@ -156,7 +168,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
                     textInputLayout.setErrorEnabled(true);
                     textInputLayout.setError(getContext().getString(R.string.validation_url_empty));
                 }
-                else if(! m.find())
+                else if(!m.find())
                 {
                     textInputLayout.setErrorEnabled(true);
                     textInputLayout.setError(getContext().getString(R.string.validation_url_invalid_regex));
@@ -182,7 +194,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
                     textInputLayout.setErrorEnabled(true);
                     textInputLayout.setError(getContext().getString(R.string.validation_url_empty));
                 }
-                else if(! m.find())
+                else if(!m.find())
                 {
                     textInputLayout.setErrorEnabled(true);
                     textInputLayout.setError(getContext().getString(R.string.validation_url_invalid_regex));
@@ -212,7 +224,7 @@ public class ValidatingEditTextPreference extends EditTextPreference
                                 public void onTaskEnd(String result)
                                 {
                                     Log.d(TAG, result);
-                                    switch (result)
+                                    switch(result)
                                     {
                                         case DropboxLinkValidator.NO_ERROR:
                                             textInputLayout.setErrorEnabled(false);

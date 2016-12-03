@@ -1,13 +1,9 @@
 package com.roundel.fizyka;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -20,7 +16,6 @@ import com.roundel.fizyka.dropbox.DropboxEntity;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.StringTokenizer;
 
 /**
  * Created by Krzysiek on 2016-10-25.
@@ -39,7 +34,8 @@ public class RadioDialog extends AppCompatDialogFragment
     int paddingLeft = 24;
     int paddingRight = 24;
 
-    public void setTitle(String title) {
+    public void setTitle(String title)
+    {
         this.mTitle = title;
     }
 
@@ -60,7 +56,8 @@ public class RadioDialog extends AppCompatDialogFragment
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState)
+    {
         /*Dialog dialog = new Dialog(getActivity());
         dialog.setContentView(R.layout.radio_dialog);
         dialog.setTitle("Sort by");
@@ -91,15 +88,18 @@ public class RadioDialog extends AppCompatDialogFragment
 
         RadioGroup group = (RadioGroup) radioLayout.findViewById(R.id.radio_group);
 
-        for(final int mode : mItemList) {
+        for(final int mode : mItemList)
+        {
             RadioButton button = new RadioButton(getActivity());
             button.setText(DropboxEntity.getLocalizedSortingName(getContext(), mode));
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
             button.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
             button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            button.setOnClickListener(new View.OnClickListener() {
+            button.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View view)
+                {
                     mListener.onClick(mode);
                 }
             });
@@ -107,7 +107,6 @@ public class RadioDialog extends AppCompatDialogFragment
                 button.setChecked(true);
             group.addView(button);
         }
-
 
 
         return dialog;

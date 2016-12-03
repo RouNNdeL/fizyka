@@ -1,6 +1,5 @@
 package com.roundel.fizyka.activity;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,7 +42,6 @@ import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -77,12 +74,13 @@ public class FileExplorerActivity extends AppCompatActivity
         sortingMode = preferences.getInt("sorting_mode", DropboxEntity.SORT_NAME);
         List<String> sortingFlagsString = Arrays.asList(preferences.getString("sorting_flags", "").split(";"));
 
-        for(String s : sortingFlagsString){
+        for(String s : sortingFlagsString)
+        {
             try
             {
                 sortingFlags.add(Integer.parseInt(s));
             }
-            catch (NumberFormatException e)
+            catch(NumberFormatException e)
             {
                 break;
             }
@@ -145,7 +143,7 @@ public class FileExplorerActivity extends AppCompatActivity
                                 }
                             }
                         }
-                        catch (PackageManager.NameNotFoundException e)
+                        catch(PackageManager.NameNotFoundException e)
                         {
                         }
                     }
@@ -173,10 +171,10 @@ public class FileExplorerActivity extends AppCompatActivity
 
         try
         {
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir()+"/dropbox_entities.dat"));
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilesDir() + "/dropbox_entities.dat"));
             mEntities = (List<DropboxEntity>) ois.readObject();
 
-            if (!DropboxEntity.filesExist(mEntities, Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath))
+            if(!DropboxEntity.filesExist(mEntities, Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath))
             {
                 Toast.makeText(FileExplorerActivity.this, getString(R.string.missing_files), Toast.LENGTH_LONG).show();
             }
@@ -190,10 +188,10 @@ public class FileExplorerActivity extends AppCompatActivity
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
                 {
                     DropboxEntity clickedItem = ((DropboxEntity) mListView.getItemAtPosition(i));
-                    Log.d("ListView", "Clicked: "+clickedItem.toString());
+                    Log.d("ListView", "Clicked: " + clickedItem.toString());
                     if(clickedItem.getType() == DropboxEntity.TYPE_FOLDER)
                     {
-                        currentPath = clickedItem.getPath()+"/";
+                        currentPath = clickedItem.getPath() + "/";
                         backPath = clickedItem.getParentDirectory();
                         String test = clickedItem.getPath();
                         updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags, false);
@@ -201,14 +199,14 @@ public class FileExplorerActivity extends AppCompatActivity
                     }
                     else if(clickedItem.getType() == DropboxEntity.TYPE_FILE)
                     {
-                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+folderPath+clickedItem.getPath());
+                        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + folderPath + clickedItem.getPath());
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(Uri.fromFile(file), clickedItem.getMimeType());
                         PackageManager packageManager = getPackageManager();
                         List activities = packageManager.queryIntentActivities(intent,
                                 PackageManager.MATCH_DEFAULT_ONLY);
                         boolean isIntentSafe = activities.size() > 0;
-                        if (isIntentSafe)
+                        if(isIntentSafe)
                         {
                             startActivity(intent);
                         }
@@ -221,14 +219,15 @@ public class FileExplorerActivity extends AppCompatActivity
             });
 
 
-        } catch (InvalidClassException|  ClassNotFoundException | EOFException e)
+        }
+        catch(InvalidClassException | ClassNotFoundException | EOFException e)
         {
             TextView textView = (TextView) findViewById(R.id.updateRequiredTextView);
             textView.setVisibility(View.VISIBLE);
             textView.setText(getString(R.string.class_changed_update));
             findViewById(R.id.fileListView).setVisibility(View.GONE);
         }
-        catch (IOException e1)
+        catch(IOException e1)
         {
             e1.printStackTrace();
         }
@@ -245,7 +244,7 @@ public class FileExplorerActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId())
+        switch(item.getItemId())
         {
             case R.id.menu_sort:
                 onShowSortDialog();
@@ -283,7 +282,7 @@ public class FileExplorerActivity extends AppCompatActivity
     private void updateListView(final ListView listView, List<DropboxEntity> entities, String path, final int sortingMode, List<Integer> flags, boolean animateArrow)
     {
         List<DropboxEntity> entitiesFromPath = new ArrayList<>();
-        for (DropboxEntity entity : entities)
+        for(DropboxEntity entity : entities)
         {
             if(Objects.equals(entity.getParentDirectory(), path))
             {
@@ -298,7 +297,8 @@ public class FileExplorerActivity extends AppCompatActivity
                 new FileAdapter.OnSortArrowClickListener()
                 {
                     @Override
-                    public void onClick(View view) {
+                    public void onClick(View view)
+                    {
                         if(sortingFlags.contains(DropboxEntity.FLAG_INVERSE))
                         {
                             sortingFlags.remove((Integer) DropboxEntity.FLAG_INVERSE);
@@ -309,7 +309,7 @@ public class FileExplorerActivity extends AppCompatActivity
                         }
                         updateListView(listView, mEntities, currentPath, sortingMode, sortingFlags, true);
                     }
-        });
+                });
 
         List<DropboxEntity> folders = DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FOLDER);
         List<DropboxEntity> files = DropboxEntity.getEntitiesByType(entitiesFromPath, DropboxEntity.TYPE_FILE);
@@ -328,11 +328,11 @@ public class FileExplorerActivity extends AppCompatActivity
         String totalPath = "/";
         container.removeAllViews();
         current = addChild(container, "/", totalPath);
-        for (String folder: path.split("/"))
+        for(String folder : path.split("/"))
         {
             if(!folder.isEmpty())
             {
-                totalPath += folder+"/";
+                totalPath += folder + "/";
                 current = addChild(container, folder, totalPath);
             }
         }
@@ -376,9 +376,11 @@ public class FileExplorerActivity extends AppCompatActivity
         dialog.setTitle(getString(R.string.sort_title));
         dialog.setContent(sortingModes);
         dialog.setChecked(sortingMode);
-        dialog.addOnItemClickListener(new RadioDialog.OnItemClickListener() {
+        dialog.addOnItemClickListener(new RadioDialog.OnItemClickListener()
+        {
             @Override
-            public void onClick(int mode) {
+            public void onClick(int mode)
+            {
                 sortingMode = mode;
                 dialog.dismiss();
                 updateListView(mListView, mEntities, currentPath, sortingMode, sortingFlags, false);
